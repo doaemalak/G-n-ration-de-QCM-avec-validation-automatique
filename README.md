@@ -42,7 +42,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 2 | Extraction et nettoyage du texte (accents LaTeX, code, sommaires, en-têtes) | ✅ |
 | 3 | Découpage en passages | ✅ |
 | 4 | Base de référence : questions à trous + distracteurs par embeddings | ✅ |
-| 5 | Modèle avancé : LLM ouvert (prompt few-shot, sortie JSON) | ⏳ |
+| 5 | Modèle avancé : LLM ouvert Qwen2.5-7B-Instruct (prompt few-shot, sortie JSON) | 🟡 code prêt, génération à lancer sur Colab |
 | 6 | Contrôles de forme | ⏳ |
 | 7 | Validateur V1 / V2 / V3 (questions-réponses + NLI) | ⏳ |
 | 8 | Filtrage et mesure de l'apport du filtre | ⏳ |
@@ -52,12 +52,15 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 
 ## Exécution
 
-**Sur Google Colab (recommandé, GPU T4) :**
-1. Ouvrir `notebooks/QCM_generation_validation.ipynb` dans Colab.
-2. Activer le GPU : Exécution → Modifier le type d'exécution → GPU.
-3. Lancer *Exécution → Tout exécuter*.
+**Sur Google Colab (nécessaire pour l'étape 5, qui demande un GPU) :**
+1. Créer un jeton GitHub : *GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens*. Le limiter à ce dépôt, avec le droit *Contents : Read and write*.
+2. Dans Colab : *Fichier → Ouvrir un notebook → GitHub*, cocher « Inclure les dépôts privés », puis ouvrir `notebooks/QCM_generation_validation.ipynb`.
+3. Ajouter le jeton dans les secrets Colab (icône 🔑 à gauche) sous le nom `GITHUB_TOKEN`, et activer l'accès au notebook. Il ne faut jamais écrire le jeton dans une cellule.
+4. Activer le GPU : *Exécution → Modifier le type d'exécution → GPU T4*.
+5. *Exécution → Tout exécuter*. La première cellule clone le dépôt. L'étape 1 demande de téléverser les 6 PDF.
+6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl` et `outputs/qcm/llm_brut.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache.
 
-**En local :**
+**En local (sans GPU, étapes 0 à 4, puis la suite si le cache du LLM est présent) :**
 ```bash
 pip install -r requirements.txt
 jupyter notebook notebooks/QCM_generation_validation.ipynb
