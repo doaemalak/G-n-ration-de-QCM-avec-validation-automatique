@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Caches de modèles Hugging Face
+.cache/
+hf_cache/
+
+# PDF de cours fournis par l'enseignant : droits de diffusion à vérifier avant de les publier
+data/raw/*.pdf
+
+# Système
+.DS_Store
+Thumbs.db
