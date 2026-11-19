@@ -41,7 +41,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 1 | Collecte des 6 supports de cours (langage C) | ✅ |
 | 2 | Extraction et nettoyage du texte (accents LaTeX, code, sommaires, en-têtes) | ✅ |
 | 3 | Découpage en passages | ✅ |
-| 4 | Base de référence : questions à trous + distracteurs par embeddings | ⏳ |
+| 4 | Base de référence : questions à trous + distracteurs par embeddings | ✅ |
 | 5 | Modèle avancé : LLM ouvert (prompt few-shot, sortie JSON) | ⏳ |
 | 6 | Contrôles de forme | ⏳ |
 | 7 | Validateur V1 / V2 / V3 (questions-réponses + NLI) | ⏳ |

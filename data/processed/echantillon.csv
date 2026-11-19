@@ -1,0 +1,121 @@
+passage_id,cours_id,section,n_mots
+C1_000,C1,Historique,122
+C1_004,C1,La compilation,121
+C1_010,C1,Le type caractère,135
+C1_011,C1,Les types entiers,150
+C1_019,C1,L’affectation,129
+C1_035,C1,Les tableaux,155
+C1_044,C1,Notion de pointeur,239
+C1_049,C1,Allocation dynamique,189
+C1_051,C1,Pointeurs et tableaux à plusieurs dimensions,282
+C1_057,C1,Appel d’une fonction,106
+C1_059,C1,Durée de vie des variables,161
+C1_060,C1,Durée de vie des variables,181
+C1_066,C1,La fonction main,163
+C1_083,C1,Les entrées-sorties binaires,197
+C1_097,C1,Règles générales de compilation,146
+C1_098,C1,Règles générales de compilation,138
+C1_115,C1,Règles générales de compilation,171
+C1_117,C1,Règles générales de compilation,190
+C1_123,C1,Règles générales de compilation,201
+C1_127,C1,Règles générales de compilation,199
+C2_000,C2,Langage C,150
+C2_004,C2,Langages de programmation,180
+C2_005,C2,Langages de programmation,98
+C2_009,C2,Fonctions d'entrées/sorties les plus utilisées,167
+C2_010,C2,Fonctions d'entrées/sorties les plus utilisées,190
+C2_012,C2,Fonctions d'entrées/sorties les plus utilisées,174
+C2_018,C2,Variables / identificateurs / adresse / pointeurs,155
+C2_022,C2,Relationnels,183
+C2_028,C2,Instructions,108
+C2_036,C2,Goto (aller à),90
+C2_038,C2,Déclarations locales,162
+C2_039,C2,Déclarations locales,178
+C2_047,C2,"Récursivité, gestion de la pile",81
+C2_054,C2,Tableaux unidimensionnels,192
+C2_061,C2,Utilisation,94
+C2_066,C2,Structures chaînées,113
+C2_068,C2,Fichiers bruts,156
+C2_069,C2,Fichiers bruts,163
+C2_072,C2,Fichiers bufférisés,168
+C2_075,C2,Fichiers bufférisés,146
+C3_000,C3,Terminologie informatique,152
+C3_004,C3,Présentation générale du langage C,153
+C3_005,C3,Présentation générale du langage C,165
+C3_009,C3,Les mots-clefs,100
+C3_010,C3,Les constantes entières,206
+C3_013,C3,Les constantes chaînes de caractères,168
+C3_022,C3,Les opérateurs logiques bit à bit,132
+C3_027,C3,Les types entiers,168
+C3_036,C3,If – else,85
+C3_037,C3,While,170
+C3_039,C3,While,101
+C3_041,C3,Déclaration et mémorisation,149
+C3_053,C3,Les unions,169
+C3_055,C3,La déclaration de types synonymes : typedef,123
+C3_058,C3,Notion de pointeur,135
+C3_064,C3,Pointeur et structures,129
+C3_071,C3,Conditions particulières et cas d'erreur,185
+C3_072,C3,Lecture et écriture dans les fichiers séquentiels,84
+C3_079,C3,Définition de fonctions,156
+C3_084,C3,Passage des paramètres par valeur,150
+C4_000,C4,Préambule,291
+C4_001,C4,Phases d’élaboration d’un programme C,175
+C4_003,C4,Les Chaînes,89
+C4_005,C4,Action d'affectation,183
+C4_012,C4,Type tableau,114
+C4_013,C4,Déclaration et initialisation d’un tableau unidimensionnel (vecteur),103
+C4_017,C4,Pointeurs,107
+C4_018,C4,Définition,148
+C4_020,C4,Exemple d’application,95
+C4_021,C4,Pointeur et tableau,125
+C4_022,C4,Création d’une variable dynamique,106
+C4_024,C4,Réallocation d’un bloc mémoire dynamique,99
+C4_025,C4,Introduction,80
+C4_026,C4,Déclaration d’une fonction,91
+C4_027,C4,Définition d’une fonction,212
+C4_029,C4,Définitions,109
+C4_030,C4,Avantages et Inconvénients,139
+C4_031,C4,Programmation des fichiers,80
+C4_032,C4,Ouverture,172
+C4_033,C4,Fichiers texte,244
+C5_004,C5,Représentation de l’information en mémoire centrale,211
+C5_005,C5,Structure d’un programme,156
+C5_007,C5,Structure d’un programme,133
+C5_009,C5,Nombres flottants,123
+C5_010,C5,Les caractères,83
+C5_013,C5,Les opérateurs logiques,239
+C5_014,C5,Les opérateurs de comparaison,90
+C5_016,C5,Les instructions simples,88
+C5_019,C5,Analyse descendante,108
+C5_021,C5,Définition de fonction,165
+C5_029,C5,Les tableaux multidimensionnels,90
+C5_030,C5,Définition,131
+C5_031,C5,Déclaration et Initialisation,182
+C5_032,C5,Les Opérateurs & et *,84
+C5_038,C5,Conversion de type : opérateur de ”cast”,113
+C5_042,C5,Allocation,95
+C5_045,C5,Typedef : définition de nouveaux types,152
+C5_046,C5,Typedef : définition de nouveaux types,154
+C5_050,C5,Fichiers binaires,264
+C5_051,C5,Fichiers texte,258
+C6_000,C6,Historique,221
+C6_001,C6,Les mots clés,116
+C6_002,C6,Opérateurs,95
+C6_003,C6,Identificateurs,123
+C6_005,C6,"Les types char, signed char et unsigned char",97
+C6_006,C6,Le type void,91
+C6_009,C6,Appel de fonction,84
+C6_011,C6,Les pointeurs,99
+C6_012,C6,L'arithmétique des pointeurs,98
+C6_014,C6,Opérations sur les tableaux,198
+C6_015,C6,La génération de types,137
+C6_016,C6,Typedef,109
+C6_017,C6,La fonction main,151
+C6_019,C6,Les champs de bits,158
+C6_020,C6,Les unions nécessité de mémoriser l'état de l'union,94
+C6_021,C6,Les opérateurs de manipulation de bits,81
+C6_022,C6,La compilation conditionnelle,88
+C6_023,C6,"Définition et invocation #define MALLOC(NB,TYPE) (TYPE*) malloc(NB*sizeof(TYPE))",124
+C6_025,C6,La classe static,80
+C6_026,C6,La classe extern,116
