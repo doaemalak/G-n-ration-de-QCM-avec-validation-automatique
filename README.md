@@ -45,7 +45,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 5 | Modèle avancé : LLM ouvert Qwen2.5-7B-Instruct (prompt few-shot, sortie JSON) | 🟡 code prêt, génération à lancer sur Colab |
 | 6 | Contrôles de forme (7 règles testées, biais de longueur) | ✅ |
 | 7 | Validateur V1 / V2 / V3 (questions-réponses SQuAD 2.0 + NLI, seuil V1 par contrôle négatif) | ✅ |
-| 8 | Filtrage et mesure de l'apport du filtre | ⏳ |
+| 8 | Filtrage final (forme ET V1 ET V2 ET V3), motifs de rejet, rendement, candidats naïfs | ✅ |
 | 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | ⏳ |
 | 10 | Ablations et sensibilité aux seuils | ⏳ |
 | 11 | Analyse des erreurs, limites, éthique | ⏳ |
