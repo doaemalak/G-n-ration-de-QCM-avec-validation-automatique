@@ -48,7 +48,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 8 | Filtrage final (forme ET V1 ET V2 ET V3), motifs de rejet, rendement, candidats naïfs | ✅ |
 | 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | 🟡 grille, guide et analyses prêts ; annotations à faire après l'étape 5 |
 | 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température : sur GPU) |
-| 11 | Analyse des erreurs, limites, éthique | ⏳ |
+| 11 | Analyse des erreurs (typologie des rejets, hallucinations, erreurs du validateur), limites, éthique | ✅ |
 
 ## Exécution
 

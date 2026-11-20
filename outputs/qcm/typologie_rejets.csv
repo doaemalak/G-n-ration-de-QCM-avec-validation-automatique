@@ -1,0 +1,37 @@
+qcm_id,methode,cours_id,categorie
+BASE_C1_000,base,C1,distracteur confirmé sans être proche
+BASE_C1_011,base,C1,distracteur proche de la réponse
+BASE_C1_019,base,C1,distracteur proche de la réponse
+BASE_C1_035,base,C1,réponse introuvable
+BASE_C1_044,base,C1,texte source dégradé
+BASE_C1_051,base,C1,bonne réponse non confirmée
+BASE_C1_066,base,C1,distracteur proche de la réponse
+BASE_C1_083,base,C1,distracteur proche de la réponse
+BASE_C1_097,base,C1,bonne réponse non confirmée
+BASE_C1_123,base,C1,réponse introuvable
+BASE_C2_004,base,C2,distracteur proche de la réponse
+BASE_C2_009,base,C2,distracteur proche de la réponse
+BASE_C2_012,base,C2,bonne réponse non confirmée
+BASE_C2_022,base,C2,distracteur proche de la réponse
+BASE_C2_028,base,C2,distracteur proche de la réponse
+BASE_C2_038,base,C2,distracteur proche de la réponse
+BASE_C2_054,base,C2,distracteur proche de la réponse
+BASE_C2_066,base,C2,distracteur proche de la réponse
+BASE_C2_068,base,C2,bonne réponse non confirmée
+BASE_C2_075,base,C2,distracteur proche de la réponse
+BASE_C3_036,base,C3,bonne réponse non confirmée
+BASE_C3_064,base,C3,distracteur proche de la réponse
+BASE_C3_071,base,C3,distracteur proche de la réponse
+BASE_C3_079,base,C3,réponse introuvable
+BASE_C4_005,base,C4,distracteur proche de la réponse
+BASE_C4_020,base,C4,distracteur proche de la réponse
+BASE_C4_026,base,C4,défaut de forme
+BASE_C4_027,base,C4,distracteur proche de la réponse
+BASE_C4_029,base,C4,bonne réponse non confirmée
+BASE_C5_005,base,C5,bonne réponse non confirmée
+BASE_C5_007,base,C5,distracteur proche de la réponse
+BASE_C5_010,base,C5,distracteur proche de la réponse
+BASE_C5_038,base,C5,distracteur proche de la réponse
+BASE_C5_046,base,C5,distracteur confirmé sans être proche
+BASE_C5_050,base,C5,distracteur proche de la réponse
+BASE_C6_014,base,C6,bonne réponse non confirmée
