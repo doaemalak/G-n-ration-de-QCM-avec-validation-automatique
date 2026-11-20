@@ -47,7 +47,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 7 | Validateur V1 / V2 / V3 (questions-réponses SQuAD 2.0 + NLI, seuil V1 par contrôle négatif) | ✅ |
 | 8 | Filtrage final (forme ET V1 ET V2 ET V3), motifs de rejet, rendement, candidats naïfs | ✅ |
 | 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | 🟡 grille, guide et analyses prêts ; annotations à faire après l'étape 5 |
-| 10 | Ablations et sensibilité aux seuils | ⏳ |
+| 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température : sur GPU) |
 | 11 | Analyse des erreurs, limites, éthique | ⏳ |
 
 ## Exécution
@@ -58,7 +58,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 3. Ajouter le jeton dans les secrets Colab (icône 🔑 à gauche) sous le nom `GITHUB_TOKEN`, et activer l'accès au notebook. Il ne faut jamais écrire le jeton dans une cellule.
 4. Activer le GPU : *Exécution → Modifier le type d'exécution → GPU T4*.
 5. *Exécution → Tout exécuter*. La première cellule clone le dépôt. L'étape 1 demande de téléverser les 6 PDF.
-6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl`, `outputs/qcm/llm_brut.jsonl` et `outputs/qcm/scores_validateur.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache.
+6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl`, `outputs/qcm/llm_brut.jsonl`, `outputs/qcm/scores_validateur.jsonl`, `outputs/qcm/scores_ablation.jsonl` et `outputs/qcm/qcm_llm_temperature.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache.
 
 **Évaluation humaine (étape 9), une fois les QCM du LLM présents :**
 1. Réexécuter le notebook. Il crée dans `data/annotations/` les fichiers `grille_evaluateur_A.csv`, `grille_evaluateur_B.csv` et `cle_echantillon.csv`.
