@@ -73,6 +73,18 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 5. *Exécution → Tout exécuter*. La première cellule clone le dépôt. L'étape 1 demande de téléverser les 6 PDF.
 6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl`, `outputs/qcm/llm_brut.jsonl`, `outputs/qcm/scores_validateur.jsonl`, `outputs/qcm/scores_ablation.jsonl` et `outputs/qcm/qcm_llm_temperature.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache. Chaque QCM enregistre le modèle utilisé : un cache produit par un autre modèle doit être renommé ou déplacé (le notebook s'arrête et l'explique).
 
+**Exécution autonome (une seule autorisation à cliquer) :**
+1. Déposer les six PDF dans `MyDrive/TALN/pdf` (ou définir `QCM_PDF_DIR`).
+2. Fusionner la branche de travail dans `main` : la cellule de clone récupère `main`.
+3. Ouvrir le notebook depuis GitHub, activer le GPU T4, puis *Exécution → Tout exécuter*.
+4. À la fin, `MyDrive/TALN/sorties_taln.zip` contient `outputs/qcm/`, `outputs/figures/`
+   et `data/annotations/` — à replacer dans le dépôt local. Aucun PDF n'est inclus.
+
+Compter 30 à 45 minutes avec un T4 (génération Qwen3-4B + validateur). Si la session
+s'arrête, les caches déjà écrits sont dans le zip ; relancer reprend à partir d'eux.
+Le notebook vérifie aussi les versions (`transformers >= 4.53`) et les installe si
+Colab est en retard.
+
 **Évaluation humaine (étape 9), une fois les QCM du LLM présents :**
 1. Réexécuter le notebook. Il crée dans `data/annotations/` les fichiers `grille_evaluateur_A.csv`, `grille_evaluateur_B.csv` et `cle_echantillon.csv`.
 2. Chaque membre du binôme lit `GUIDE_ANNOTATION.md`, puis remplit **sa** grille seul, dans Excel ou LibreOffice, en gardant le format CSV avec le séparateur `;`. Il ne faut pas ouvrir `cle_echantillon.csv` avant d'avoir terminé.
