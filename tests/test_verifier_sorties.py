@@ -163,6 +163,19 @@ def test_detecte_un_id_en_double(copie):
     assert any("qcm_id en double" in e for e in rapport.erreurs)
 
 
+def test_base_et_llm_partagent_les_memes_passages(copie):
+    """Le recouvrement des passages est normal ; seuls les qcm_id doivent différer."""
+    base = _lire_jsonl(copie / "outputs" / "qcm" / "qcm_base.jsonl")
+    llm = [{**q, "qcm_id": q["qcm_id"].replace("BASE_", "LLM_"), "methode": "llm"} for q in base[:20]]
+    _reecrire_jsonl(copie / "outputs" / "qcm" / "qcm_llm.jsonl", llm)
+
+    rapport = verif.Rapport()
+    passages, _ = verif.verifier_passages(rapport)
+    verif.verifier_qcm(rapport, passages)
+    assert not any("aucun passage commun" in e for e in rapport.erreurs)
+    assert not any("qcm_id présent(s) à la fois" in e for e in rapport.erreurs)
+
+
 def test_mode_strict_echoue_sur_avertissement(copie, capsys):
     (copie / "docs" / "article" / "article.md").unlink()
     code = verif.principal(["--strict"])

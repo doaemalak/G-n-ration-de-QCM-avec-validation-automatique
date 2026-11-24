@@ -238,13 +238,19 @@ def verifier_qcm(rapport: Rapport, passages: dict[str, dict]) -> dict[str, list[
     for q in fichiers.get("qcm_llm", []):
         rapport.verifier(q.get("methode") == "llm", f"qcm_llm.jsonl : {q.get('qcm_id')} n'est pas de méthode llm")
 
-    # Les deux générateurs partagent le même échantillon : base et LLM ne se recouvrent pas.
-    base = {q.get("passage_id") for q in fichiers.get("qcm_base", [])}
-    llm = {q.get("passage_id") for q in fichiers.get("qcm_llm", [])}
-    if llm:
-        rapport.verifier(not (base & llm),
-                         f"{len(base & llm)} passage(s) produisent à la fois un QCM base et un QCM LLM "
-                         "(identifiants différents attendus : BASE_x / LLM_x)")
+    # Les deux générateurs travaillent sur LES MÊMES passages : le recouvrement des
+    # passage_id est attendu. Ce sont les identifiants de QCM qui doivent être distincts.
+    ids_base = {q.get("qcm_id") for q in fichiers.get("qcm_base", [])}
+    ids_llm = {q.get("qcm_id") for q in fichiers.get("qcm_llm", [])}
+    if ids_llm:
+        rapport.verifier(not (ids_base & ids_llm),
+                         f"{len(ids_base & ids_llm)} qcm_id présent(s) à la fois dans qcm_base et qcm_llm")
+        passage_base = {q.get("passage_id") for q in fichiers.get("qcm_base", [])}
+        passage_llm = {q.get("passage_id") for q in fichiers.get("qcm_llm", [])}
+        if passage_llm and passage_base:
+            rapport.verifier(len(passage_llm & passage_base) > 0,
+                             "aucun passage commun entre base et LLM : les méthodes ne sont pas "
+                             "comparées sur les mêmes données")
     return fichiers
 
 
