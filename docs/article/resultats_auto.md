@@ -54,7 +54,26 @@ l'étape 5 exécutée sur GPU.
 | distracteur confirmé sans être proche | 2 | 2 |
 | Total | 36 | 36 |
 
-## Tableau 7 — Ablation des contrôles du filtre (taux d'acceptation)
+## Tableau 7 — Couverture par cours (QCM produits pour 20 passages)
+
+| Cours | Passages | base |
+|---|---|---|
+| C1 | 20 | 19 |
+| C2 | 20 | 19 |
+| C3 | 20 | 20 |
+| C4 | 20 | 18 |
+| C5 | 20 | 18 |
+| C6 | 20 | 3 |
+
+## Tableau 8 — Contrôles négatifs et défauts injectés
+
+| Méthode | Contrôle négatif V1 | AUC | % de questions sans réponse acceptées | dont rejetés par V2 (%) | dont rejetés par V3 (%) |
+|---|---|---|---|---|---|
+| base | autre cours | 0,993 | 5,2 | — | — |
+| base | même cours | 0,992 | 4,1 | — | — |
+| base | clé de correction fausse | — | — | 100 | 77,8 |
+
+## Tableau 9 — Ablation des contrôles du filtre (taux d'acceptation)
 
 | Variante | % acceptés (base) | % acceptés (total) |
 |---|---|---|
@@ -66,7 +85,7 @@ l'étape 5 exécutée sur GPU.
 | forme seule | 99 | 99 |
 | aucun filtre | 100 | 100 |
 
-## Tableau 8 — Ablations de modèles
+## Tableau 10 — Ablations de modèles
 
 | Méthode | Modèle QA | AUC (vrai passage / autre cours) | % vraies questions acceptées à 5 % de fausses acceptations |
 |---|---|---|---|
@@ -80,7 +99,7 @@ l'étape 5 exécutée sur GPU.
 | B, 1 phrase | 91,8 | 85,6 | 24,7 |
 | B, 4 phrases | 86,6 | 54,6 | 69 |
 
-## Tableau 9 — Sensibilité aux seuils
+## Tableau 11 — Sensibilité aux seuils
 
 | Seuil | Valeurs testées | Valeur retenue | % acceptés à la valeur retenue | % acceptés : min – max sur la plage |
 |---|---|---|---|---|
@@ -88,13 +107,13 @@ l'étape 5 exécutée sur GPU.
 | V2 : implication min. de la bonne réponse | 0,3 – 0,8 | 0,5 | 62,9 | 61,9 – 63,9 |
 | V3 : implication max. d'un distracteur | 0,6 – 0,99 | 0,9 | 62,9 | 28,9 – 86,6 |
 
-## Tableau 10 — Biais de longueur (test binomial contre 25 %)
+## Tableau 12 — Biais de longueur (test binomial contre 25 %)
 
 | Méthode | QCM | Bonne réponse = plus longue | % | p (H0 : 25 %) |
 |---|---|---|---|---|
 | base | 97 | 24 | 24,7 | 1 |
 
-## Tableau 11 — Évaluation humaine : en attente des annotations (voir data/annotations/GUIDE_ANNOTATION.md)
+## Tableau 13 — Évaluation humaine : en attente des annotations (voir data/annotations/GUIDE_ANNOTATION.md)
 
 ## Ce qu'il reste à calculer
 

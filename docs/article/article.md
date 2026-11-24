@@ -199,8 +199,9 @@ phrases) ; modèle NLI plus grand (mDeBERTa-v3, GPU) ; température du LLM.
 
 La base produit **97 QCM sur 120 passages (80,8 %)**. La couverture dépend du format :
 20/20 pour C3, 19/20 pour C1 et C2, 18/20 pour C4 et C5, mais **3/20 pour C6**, dont les
-diapositives n'offrent presque aucune phrase complète. Sur ces 97 QCM, **61 sont
-acceptés (62,9 %)**, soit 50,8 QCM utilisables pour 120 passages.
+diapositives n'offrent presque aucune phrase complète (tableau 7 de
+`resultats_auto.md`). Sur ces 97 QCM, **61 sont acceptés (62,9 %)**, soit 50,8 QCM
+utilisables pour 120 passages.
 
 **Tableau 2 — Taux de passage des tests (%)**
 
@@ -213,8 +214,8 @@ près). Le filtrage est donc presque entièrement sémantique, et **V3 en porte
 l'essentiel** : dans la cascade, la forme retire 1 QCM, V1 3, V2 9, V3 23, et 61 sont
 acceptés.
 
-Sur les défauts injectés, V2 rejette 100 % des clés fausses (par construction) et V3 en
-détecte 77,8 %. Le contrôle négatif de V1 donne une AUC de 0,993 ; avec un passage **du
+Sur les défauts injectés (tableau 8 de `resultats_auto.md`), V2 rejette 100 % des clés
+fausses (par construction) et V3 en détecte 77,8 %. Le contrôle négatif de V1 donne une AUC de 0,993 ; avec un passage **du
 même cours**, l'AUC reste à 0,992 et le taux de questions sans réponse acceptées passe
 de 5,2 % à 4,1 % : le contrôle plus difficile ne dégrade pas V1, et le taux de fausse
 acceptation annoncé (5 %) est réaliste.

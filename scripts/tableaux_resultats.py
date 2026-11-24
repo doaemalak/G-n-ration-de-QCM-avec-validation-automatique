@@ -261,6 +261,72 @@ def decisions(donnees: dict, controles=("forme", "V1", "V2", "V3"),
     return pd.Series(accepte, index=val["qcm_id"])
 
 
+
+def tableau_couverture(donnees: dict) -> tuple[str, pd.DataFrame]:
+    """QCM produits pour les 20 passages de chaque cours : la couverture dépend du format."""
+    val = donnees["validation"]
+    n_par_cours = pd.read_csv(DATA_DIR / "processed" / "echantillon.csv").groupby("cours_id").size()
+    df = pd.crosstab(val["cours_id"], val["methode"]).reindex(sorted(n_par_cours.index), fill_value=0)
+    df.insert(0, "Passages", n_par_cours)
+    df.index.name = "Cours"
+    return "Tableau 7 — Couverture par cours (QCM produits pour 20 passages)", df
+
+
+def tableau_controles_negatifs(donnees: dict) -> tuple[str, pd.DataFrame]:
+    """Contrôle négatif de V1 (autre cours, même cours) et défauts injectés.
+
+    Reproduit la section 7.5 du notebook : sur les QCM qui passent V2 et V3, on
+    déclare un distracteur comme bonne réponse et on regarde si V2 et V3
+    rejettent le QCM corrompu.
+    """
+    val = donnees["validation"]
+    abl = donnees["ablation"]
+    if not abl.empty:
+        abl = abl.set_index("qcm_id").reindex(val["qcm_id"])
+    seuil_v1 = np.quantile(val["qa_score_neg"], CENTILE_V1)
+    lignes = []
+
+    for m in methodes(donnees):
+        g = val[val["methode"] == m]
+        pos = g["qa_score"].to_numpy(float)
+        negatives = {"autre cours": g["qa_score_neg"].to_numpy(float)}
+        if not abl.empty and "qa_score_neg_meme_cours" in abl:
+            negatives["même cours"] = abl.loc[g["qcm_id"], "qa_score_neg_meme_cours"].to_numpy(float)
+        for nom, neg in negatives.items():
+            if np.isnan(neg).any():
+                continue
+            lignes.append({
+                "Méthode": m, "Contrôle négatif V1": nom,
+                "AUC": round(roc_auc_score(np.r_[np.ones(len(pos)), np.zeros(len(neg))], np.r_[pos, neg]), 3),
+                "% de questions sans réponse acceptées": round(100 * (neg >= seuil_v1).mean(), 1),
+            })
+
+    ok = val[val["V2"] & val["V3"]].reset_index(drop=True)
+    if len(ok):
+        rng = np.random.default_rng(42)
+        c = ok["index_correct"].to_numpy()
+        # Même protocole que la cellule 7.5 : un distracteur tiré au hasard, jamais la bonne réponse.
+        fausse_cle = np.array([rng.choice([k for k in range(4) if k != cc]) for cc in c])
+        imp = np.array(ok["implication"].tolist())
+        r = np.arange(len(c))
+        v2 = (imp.argmax(axis=1) == fausse_cle) & (imp[r, fausse_cle] >= IMP_MIN_V2)
+        v3 = np.where(np.eye(4, dtype=bool)[fausse_cle], -1, imp).max(axis=1) < IMP_MAX_V3
+        for m in methodes(donnees):
+            masque = (ok["methode"] == m).to_numpy()
+            if not masque.any():
+                continue
+            lignes.append({
+                "Méthode": m, "Contrôle négatif V1": "clé de correction fausse",
+                "AUC": np.nan,
+                "% de questions sans réponse acceptées": np.nan,
+                "dont rejetés par V2 (%)": round(100 * (~v2[masque]).mean(), 1),
+                "dont rejetés par V3 (%)": round(100 * (~v3[masque]).mean(), 1),
+            })
+    df = pd.DataFrame(lignes)
+    df = df.dropna(axis=1, how="all").set_index(["Méthode", "Contrôle négatif V1"])
+    return "Tableau 8 — Contrôles négatifs et défauts injectés", df
+
+
 def tableau_ablation_controles(donnees: dict) -> tuple[str, pd.DataFrame]:
     val = donnees["validation"]
     tous = ("forme", "V1", "V2", "V3")
@@ -288,14 +354,14 @@ def tableau_ablation_controles(donnees: dict) -> tuple[str, pd.DataFrame]:
             ligne[f"% acceptés ({m})"] = round(100 * acc[masque.to_numpy()].mean(), 1)
         ligne["% acceptés (total)"] = round(100 * acc.mean(), 1)
         lignes.append(ligne)
-    return "Tableau 7 — Ablation des contrôles du filtre (taux d'acceptation)", \
+    return "Tableau 9 — Ablation des contrôles du filtre (taux d'acceptation)", \
         pd.DataFrame(lignes).set_index("Variante")
 
 
 def tableau_ablation_modeles(donnees: dict) -> tuple[str, pd.DataFrame]:
     val, abl = donnees["validation"], donnees["ablation"]
     if abl.empty:
-        return "Tableau 8 — Ablations de modèles (indisponible)", pd.DataFrame()
+        return "Tableau 10 — Ablations de modèles (indisponible)", pd.DataFrame()
     # Les QCM du LLM peuvent être plus récents que le cache d'ablation : on aligne,
     # les lignes manquantes deviennent NaN et sont signalées par « — ».
     abl = abl.set_index("qcm_id").reindex(val["qcm_id"]).reset_index()
@@ -359,7 +425,7 @@ def tableau_ablation_modeles(donnees: dict) -> tuple[str, pd.DataFrame]:
         ligne["Clé fausse détectée par V3 (tirage 10.2, %)"] = round(100 * detecte.mean(), 1) if pref_dispo.any() else np.nan
         lignes_nli.append(ligne)
 
-    return "Tableau 8 — Ablations de modèles", (df_qa, pd.DataFrame(lignes_nli).set_index("Variante NLI"))
+    return "Tableau 10 — Ablations de modèles", (df_qa, pd.DataFrame(lignes_nli).set_index("Variante NLI"))
 
 
 def tableau_sensibilite(donnees: dict) -> tuple[str, pd.DataFrame]:
@@ -379,7 +445,7 @@ def tableau_sensibilite(donnees: dict) -> tuple[str, pd.DataFrame]:
             "% acceptés à la valeur retenue": round(float(proche["% acceptés"].iloc[0]), 1),
             "% acceptés : min – max sur la plage": f"{fr(g['% acceptés'].min())} – {fr(g['% acceptés'].max())}",
         })
-    return "Tableau 9 — Sensibilité aux seuils", pd.DataFrame(lignes).set_index("Seuil")
+    return "Tableau 11 — Sensibilité aux seuils", pd.DataFrame(lignes).set_index("Seuil")
 
 
 def tableau_longueur(donnees: dict) -> tuple[str, pd.DataFrame]:
@@ -391,7 +457,7 @@ def tableau_longueur(donnees: dict) -> tuple[str, pd.DataFrame]:
         lignes.append({"Méthode": nom, "QCM": len(df), "Bonne réponse = plus longue": k,
                        "%": round(100 * k / len(df), 1),
                        "p (H0 : 25 %)": round(binomtest(k, len(df), 0.25).pvalue, 3)})
-    return "Tableau 10 — Biais de longueur (test binomial contre 25 %)", \
+    return "Tableau 12 — Biais de longueur (test binomial contre 25 %)", \
         pd.DataFrame(lignes).set_index("Méthode")
 
 
@@ -400,14 +466,14 @@ def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
     cle = DATA_DIR / "annotations" / "cle_echantillon.csv"
     grilles = {e: DATA_DIR / "annotations" / f"grille_evaluateur_{e}.csv" for e in ("A", "B")}
     if not cle.exists() or not all(p.exists() for p in grilles.values()):
-        return ("Tableau 11 — Évaluation humaine : en attente des annotations "
+        return ("Tableau 13 — Évaluation humaine : en attente des annotations "
                 "(voir data/annotations/GUIDE_ANNOTATION.md)"), []
 
     annotations = {}
     for e, chemin in grilles.items():
         g = pd.read_csv(chemin, sep=";", encoding="utf-8-sig", dtype=str).fillna("")
         if (g[["clarte", "difficulte", "unicite"]].apply(lambda s: s.str.strip()) == "").all(axis=None):
-            return f"Tableau 11 — Évaluation humaine : la grille {e} est encore vierge", []
+            return f"Tableau 13 — Évaluation humaine : la grille {e} est encore vierge", []
         for col in ("clarte", "difficulte", "unicite"):
             g[col] = pd.to_numeric(g[col], errors="coerce")
         annotations[e] = g.set_index("eval_id")
@@ -470,7 +536,7 @@ def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
         "Précision du filtre (%)": round(100 * precision, 1),
         "Rappel des défauts (%)": round(100 * rappel, 1) if not np.isnan(rappel) else np.nan,
     }])
-    return "Tableau 11 — Évaluation humaine (sans intervalle de confiance ; le notebook fait foi)", \
+    return "Tableau 13 — Évaluation humaine (sans intervalle de confiance ; le notebook fait foi)", \
         [kappas.reset_index(), qualite, confusion]
 
 
@@ -485,6 +551,7 @@ def construire(donnees: dict) -> str:
     for titre, table in [
         tableau_donnees(donnees), tableau_generation(donnees), tableau_forme(donnees),
         tableau_validateur(donnees), tableau_cascade(donnees), tableau_typologie(donnees),
+        tableau_couverture(donnees), tableau_controles_negatifs(donnees),
         tableau_ablation_controles(donnees),
     ]:
         sections += [f"## {titre}", "", markdown(table), ""]

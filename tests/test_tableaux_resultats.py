@@ -76,6 +76,21 @@ def test_longueur_et_binomial():
     assert 0 <= df.loc["base", "p (H0 : 25 %)"] <= 1
 
 
+def test_controles_negatifs_reproduisent_la_section_7_5():
+    donnees = tab.charger()
+    _, df = tab.tableau_controles_negatifs(donnees)
+    assert df.loc[("base", "autre cours"), "AUC"] == pytest.approx(0.993)
+    assert df.loc[("base", "même cours"), "AUC"] == pytest.approx(0.992)
+    assert df.loc[("base", "clé de correction fausse"), "dont rejetés par V2 (%)"] == 100
+    assert df.loc[("base", "clé de correction fausse"), "dont rejetés par V3 (%)"] == pytest.approx(77.8)
+
+
+def test_couverture_par_cours():
+    _, df = tab.tableau_couverture(tab.charger())
+    assert df.loc["C6", "base"] == 3
+    assert df.loc["C3", "base"] == 20
+
+
 def test_donnees_et_passages():
     donnees = tab.charger()
     _, df = tab.tableau_donnees(donnees)
