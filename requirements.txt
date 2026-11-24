@@ -7,7 +7,8 @@ pdfplumber>=0.11
 
 # Modèles (tokenizer CamemBERT, LLM, QR, NLI)
 torch>=2.2
-transformers>=4.44
+# >= 4.53 : Qwen3-2507 et SmolLM3 (sinon KeyError 'qwen3')
+transformers>=4.53
 sentence-transformers>=3.0
 # La quantification 4 bits du LLM (bitsandbytes, accelerate) est dans requirements-gpu.txt :
 # ces paquets ne servent que sur GPU et ne s'installent pas partout.

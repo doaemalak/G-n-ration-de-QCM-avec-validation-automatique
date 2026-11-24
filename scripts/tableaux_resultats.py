@@ -170,9 +170,13 @@ def tableau_generation(donnees: dict) -> tuple[str, pd.DataFrame]:
             "QCM acceptés / passages (%)": round(100 * g["accepte"].sum() / n_passages, 1),
         })
     df = pd.DataFrame(lignes).set_index("Méthode")
-    note = ("" if not donnees["llm"].empty else
-            "\n> QCM du LLM absents (étape 5 non exécutée sur GPU) : la comparaison "
-            "base / LLM reste à compléter.")
+    if donnees["llm"].empty:
+        note = ("\n> QCM du LLM absents (étape 5 non exécutée sur GPU) : la comparaison "
+                "base / LLM reste à compléter.")
+    else:
+        note = ""
+        if "modele" in donnees["llm"]:
+            note = f"\n> Générateur LLM : `{donnees['llm']['modele'].iloc[0]}`."
     return "Tableau 2 — Couverture et rendement par méthode" + note, df
 
 

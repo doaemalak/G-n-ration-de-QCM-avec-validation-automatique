@@ -38,6 +38,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 │   └── figures/               ← graphiques utilisés dans l'article
 └── docs/
     ├── Analyse_des_besoins_Sujet11_QCM.pdf
+    ├── llm/CHOIX_MODELE.md     ← choix du générateur, alternatives et licences
     └── article/               ← LIVRABLE 2 : article (≤ 7 pages) + tableaux générés
 ```
 
@@ -52,7 +53,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 2 | Extraction et nettoyage du texte (accents LaTeX, code, sommaires, en-têtes) | ✅ |
 | 3 | Découpage en passages | ✅ |
 | 4 | Base de référence : questions à trous + distracteurs par embeddings | ✅ |
-| 5 | Modèle avancé : LLM ouvert Qwen2.5-7B-Instruct (prompt few-shot, sortie JSON) | 🟡 code prêt, génération à lancer sur Colab |
+| 5 | Modèle avancé : LLM ouvert Qwen3-4B-Instruct-2507 (prompt few-shot, sortie JSON) | 🟡 code prêt, génération à lancer sur Colab |
 | 6 | Contrôles de forme (7 règles testées, biais de longueur) | ✅ |
 | 7 | Validateur V1 / V2 / V3 (questions-réponses SQuAD 2.0 + NLI, seuil V1 par contrôle négatif) | ✅ |
 | 8 | Filtrage final (forme ET V1 ET V2 ET V3), motifs de rejet, rendement, candidats naïfs | ✅ |
@@ -70,7 +71,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 3. Ajouter le jeton dans les secrets Colab (icône 🔑 à gauche) sous le nom `GITHUB_TOKEN`, et activer l'accès au notebook. Il ne faut jamais écrire le jeton dans une cellule.
 4. Activer le GPU : *Exécution → Modifier le type d'exécution → GPU T4*.
 5. *Exécution → Tout exécuter*. La première cellule clone le dépôt. L'étape 1 demande de téléverser les 6 PDF.
-6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl`, `outputs/qcm/llm_brut.jsonl`, `outputs/qcm/scores_validateur.jsonl`, `outputs/qcm/scores_ablation.jsonl` et `outputs/qcm/qcm_llm_temperature.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache.
+6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl`, `outputs/qcm/llm_brut.jsonl`, `outputs/qcm/scores_validateur.jsonl`, `outputs/qcm/scores_ablation.jsonl` et `outputs/qcm/qcm_llm_temperature.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache. Chaque QCM enregistre le modèle utilisé : un cache produit par un autre modèle doit être renommé ou déplacé (le notebook s'arrête et l'explique).
 
 **Évaluation humaine (étape 9), une fois les QCM du LLM présents :**
 1. Réexécuter le notebook. Il crée dans `data/annotations/` les fichiers `grille_evaluateur_A.csv`, `grille_evaluateur_B.csv` et `cle_echantillon.csv`.
@@ -118,6 +119,14 @@ Ce qui reste à faire est détaillé dans `CONTRIBUTING.md` : générer les QCM 
 Colab (étape 5), faire remplir les deux grilles d'annotation (étape 9), puis finaliser
 l'article (`docs/article/README.md`). Les sections concernées de l'article portent un
 marqueur **À COMPLÉTER** ; les tableaux se mettent à jour tout seuls.
+
+## Choix du générateur LLM
+
+Le modèle par défaut est **Qwen3-4B-Instruct-2507** (Apache 2.0, 4 B, ~2,5 Go en 4 bits).
+Il remplace Qwen2.5-7B-Instruct : même licence, moitié des poids, meilleurs scores
+annoncés. Les alternatives (SmolLM3-3B, français natif ; Gemma 3 4B), les licences et
+l'ablation prévue sont détaillées dans **`docs/llm/CHOIX_MODELE.md`**. Le cache de
+génération enregistre le modèle utilisé et refuse un cache produit par un autre modèle.
 
 ## Données
 

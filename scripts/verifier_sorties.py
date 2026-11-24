@@ -237,6 +237,14 @@ def verifier_qcm(rapport: Rapport, passages: dict[str, dict]) -> dict[str, list[
         rapport.verifier(q.get("methode") == "base", f"qcm_base.jsonl : {q.get('qcm_id')} n'est pas de méthode base")
     for q in fichiers.get("qcm_llm", []):
         rapport.verifier(q.get("methode") == "llm", f"qcm_llm.jsonl : {q.get('qcm_id')} n'est pas de méthode llm")
+    if fichiers.get("qcm_llm"):
+        modeles = {q.get("modele") for q in fichiers["qcm_llm"]}
+        rapport.verifier(len(modeles) == 1,
+                         f"qcm_llm.jsonl mélange {len(modeles)} modèles : {sorted(m for m in modeles if m)} "
+                         "— impossible de comparer base et LLM sur un générateur unique")
+        if None in modeles:
+            rapport.avertir("qcm_llm.jsonl ne renseigne pas le modèle (cache antérieur) : "
+                            "la provenance des QCM n'est pas vérifiable")
 
     # Les deux générateurs travaillent sur LES MÊMES passages : le recouvrement des
     # passage_id est attendu. Ce sont les identifiants de QCM qui doivent être distincts.

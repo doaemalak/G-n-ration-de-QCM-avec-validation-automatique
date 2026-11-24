@@ -14,8 +14,9 @@ Nous transformons six cours de langage C (460 pages, 114 384 mots) en questions 
 choix multiples, puis filtrons automatiquement les questions défectueuses. Deux
 générateurs sont comparés sur un même échantillon de 120 passages : une base sans
 modèle de langage (questions à trous TF-IDF, distracteurs par embeddings) et un LLM
-ouvert instruit. Le validateur enchaîne sept règles de forme et trois tests
-sémantiques : répondabilité par un modèle de questions-réponses SQuAD 2.0 (V1),
+ouvert instruit (Qwen3-4B-Instruct-2507, 4 milliards de paramètres). Le validateur
+enchaîne sept règles de forme et trois tests sémantiques : répondabilité par un modèle
+de questions-réponses SQuAD 2.0 (V1),
 unicité de la bonne réponse (V2) et absence de distracteur correct (V3). Sur la base,
 80,8 % des passages produisent un QCM et 62,9 % des QCM sont acceptés. V3 porte
 l'essentiel du filtrage : sans lui, le taux d'acceptation passerait à 86,6 %. Le seuil
@@ -66,8 +67,8 @@ textuelle (MNLI, Williams et al., 2018 ; XNLI pour le multilingue, Conneau et al
 
 **Modèles.** XLM-RoBERTa (Conneau et al., 2020) fine-tuné sur SQuAD 2.0 (Rajpurkar et
 al., 2018) pour V1, un petit modèle NLI multilingue (MNLI + XNLI) pour V2 et V3,
-Sentence-BERT (Reimers et Gurevych, 2019) pour les embeddings, Qwen2.5-7B-Instruct
-(Qwen Team, 2024) pour la génération.
+Sentence-BERT (Reimers et Gurevych, 2019) pour les embeddings, Qwen3-4B-Instruct-2507
+(Qwen Team, 2025) pour la génération.
 
 ## 3. Données
 
@@ -122,15 +123,21 @@ de la phrase. Les options sont mélangées avec une graine liée au passage.
 
 ### 4.2 Générateur avancé
 
-Le générateur avancé est Qwen2.5-7B-Instruct, quantifié en 4 bits (NF4) pour tenir sur
-un GPU T4. Le prompt énonce sept consignes qui préparent chacune un test du validateur :
-répondable uniquement avec le passage, une seule bonne réponse, trois distracteurs faux
+Le générateur avancé est Qwen3-4B-Instruct-2507 (Apache 2.0, 4,0 milliards de
+paramètres, mode non-thinking), quantifié en 4 bits (NF4) : environ 2,5 Go de mémoire
+GPU. Il remplace Qwen2.5-7B-Instruct, choisi au démarrage du projet : à licence
+identique, il divise les poids par presque deux pour de meilleurs scores annoncés
+(MMLU-Pro 69,6 ; GPQA 62,0). Le détail des candidats (SmolLM3-3B, Gemma 3 4B,
+Qwen3-1.7B) et de leurs licences est dans `docs/llm/CHOIX_MODELE.md`. Le prompt énonce
+sept consignes qui préparent chacune un test du validateur : répondable uniquement avec
+le passage, une seule bonne réponse, trois distracteurs faux
 mais plausibles, pas de « toutes les réponses », question de compréhension, options
 courtes et équilibrées, question autonome. Deux exemples rédigés hors corpus fixent le
 format JSON (`question`, `bonne_reponse`, `distracteurs`, `justification`). La
 génération est gloutonne et déterministe, avec une relance à température 0,7 si le JSON
-est invalide ; les échecs sont comptés et les sorties mises en cache. **À COMPLÉTER** après l'étape 5 : QCM produits, taux de JSON valide, temps par
-QCM, couverture par cours.
+est invalide ; les échecs sont comptés et les sorties mises en cache avec le nom du
+modèle, pour qu'un cache produit par un autre modèle soit refusé. **À COMPLÉTER** après
+l'étape 5 : QCM produits, taux de JSON valide, temps par QCM, couverture par cours.
 
 ### 4.3 Contrôles de forme
 
@@ -215,10 +222,10 @@ l'essentiel** : dans la cascade, la forme retire 1 QCM, V1 3, V2 9, V3 23, et 61
 acceptés.
 
 Sur les défauts injectés (tableau 8 de `resultats_auto.md`), V2 rejette 100 % des clés
-fausses (par construction) et V3 en détecte 77,8 %. Le contrôle négatif de V1 donne une AUC de 0,993 ; avec un passage **du
-même cours**, l'AUC reste à 0,992 et le taux de questions sans réponse acceptées passe
-de 5,2 % à 4,1 % : le contrôle plus difficile ne dégrade pas V1, et le taux de fausse
-acceptation annoncé (5 %) est réaliste.
+fausses (par construction) et V3 en détecte 77,8 %. Le contrôle négatif de V1 donne une
+AUC de 0,993 ; avec un passage **du même cours**, l'AUC reste à 0,992 et le taux de
+questions sans réponse acceptées passe de 5,2 % à 4,1 % : le contrôle plus difficile ne
+dégrade pas V1, et le taux de fausse acceptation annoncé (5 %) est réaliste.
 
 ![Scores de V1 sur le vrai passage et sur le contrôle négatif](../../outputs/figures/v1_controle_negatif.png)
 
@@ -332,7 +339,9 @@ diapositives produisent peu de passages exploitables.
 
 **Générateurs.** La base ne pose que des questions à trous : elle teste la mémoire du
 texte, pas la compréhension. Un seul LLM, un seul prompt, sans fine-tuning : un autre
-modèle pourrait changer le classement. La génération LLM n'est pas encore mesurée ici.
+modèle pourrait changer le classement. Le choix de Qwen3-4B repose sur des benchmarks
+publics, pas sur notre corpus ; l'ablation SmolLM3-3B (français natif) reste à faire. La
+génération LLM n'est pas encore mesurée ici.
 
 **Validateur.** Il ne connaît que le passage : un distracteur vrai en C mais absent du
 texte est jugé non confirmé, donc accepté ; une bonne réponse formulée autrement peut
@@ -403,7 +412,7 @@ categorical data. *Biometrics*, 33(1), 159–174.
 Mitkov, R., & Ha, L. A. (2003). Computer-aided generation of multiple-choice tests.
 *ACL Workshop on Building Educational Applications Using NLP*.
 
-Qwen Team (2024). Qwen2.5 technical report. *arXiv:2412.15115*.
+Qwen Team (2025). Qwen3 technical report. *arXiv:2505.09388*.
 
 Rajpurkar, P., Jia, R., & Liang, P. (2018). Know what you don't know: Unanswerable
 questions for SQuAD. *ACL*.

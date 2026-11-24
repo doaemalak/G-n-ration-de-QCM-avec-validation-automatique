@@ -176,6 +176,31 @@ def test_base_et_llm_partagent_les_memes_passages(copie):
     assert not any("qcm_id présent(s) à la fois" in e for e in rapport.erreurs)
 
 
+def test_detecte_un_cache_llm_multi_modeles(copie):
+    base = _lire_jsonl(copie / "outputs" / "qcm" / "qcm_base.jsonl")
+    llm = [{**q, "qcm_id": q["qcm_id"].replace("BASE_", "LLM_"), "methode": "llm",
+            "modele": choix} for q, choix in
+           zip(base[:4], ["Qwen/Qwen3-4B-Instruct-2507"] * 2 + ["HuggingFaceTB/SmolLM3-3B"] * 2)]
+    _reecrire_jsonl(copie / "outputs" / "qcm" / "qcm_llm.jsonl", llm)
+
+    rapport = verif.Rapport()
+    passages, _ = verif.verifier_passages(rapport)
+    verif.verifier_qcm(rapport, passages)
+    assert any("mélange" in e and "modèles" in e for e in rapport.erreurs)
+
+
+def test_avertit_sur_un_cache_sans_modele(copie):
+    base = _lire_jsonl(copie / "outputs" / "qcm" / "qcm_base.jsonl")
+    llm = [{**q, "qcm_id": q["qcm_id"].replace("BASE_", "LLM_"), "methode": "llm"} for q in base[:2]]
+    _reecrire_jsonl(copie / "outputs" / "qcm" / "qcm_llm.jsonl", llm)
+
+    rapport = verif.Rapport()
+    passages, _ = verif.verifier_passages(rapport)
+    verif.verifier_qcm(rapport, passages)
+    assert not any("mélange" in e for e in rapport.erreurs)
+    assert any("ne renseigne pas le modèle" in a for a in rapport.avertissements)
+
+
 def test_mode_strict_echoue_sur_avertissement(copie, capsys):
     (copie / "docs" / "article" / "article.md").unlink()
     code = verif.principal(["--strict"])

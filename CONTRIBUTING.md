@@ -37,9 +37,14 @@ cellule de chargement du LLM ; sinon `pip install -r requirements-gpu.txt`.
 | Étape 5 — génération LLM | 🟡 code prêt, à lancer sur Colab (GPU) |
 | Étape 9 — évaluation humaine (60 QCM, 2 évaluateurs) | 🟡 grilles créées après l'étape 5 |
 | Étape 10.5 — température du LLM | 🟡 GPU |
+| Ablation du générateur (SmolLM3-3B, Gemma 3 4B) | 🟡 protocole dans `docs/llm/CHOIX_MODELE.md` |
 | LIVRABLE 2 — article | 🟡 `docs/article/article.md`, marqueurs `À COMPLÉTER` |
 
 ### 1. Générer les QCM du LLM (GPU)
+
+Modèle par défaut : `Qwen/Qwen3-4B-Instruct-2507` (voir `docs/llm/CHOIX_MODELE.md`).
+Pour une ablation, changer `QCM_LLM_MODEL` **et** `QCM_LLM_CACHE` : le notebook refuse
+un cache produit par un autre modèle.
 
 1. Colab, GPU T4, jeton GitHub dans les secrets sous le nom `GITHUB_TOKEN`.
 2. Téléverser les six PDF dans `data/raw/` (ils ne sont pas versionnés).
@@ -82,6 +87,8 @@ Sans `make`, les mêmes commandes sont dans le `Makefile`.
   `reponse`. Le LLM ajoute `justification`, `essai`, `duree_s`.
 - **Ne jamais écraser** une grille d'annotation ni un cache de génération sans le dire
   dans la *pull request* : ce sont des heures de travail ou de GPU.
+- **Provenance du LLM** : chaque QCM enregistre son champ `modele` ; ne pas réutiliser
+  un cache produit par un autre modèle (le notebook s'arrête et l'explique).
 - **Un chiffre = une source** : les nombres de l'article viennent de
   `scripts/tableaux_resultats.py`, pas d'un copier-coller. Si un seuil change dans le
   notebook, mettre à jour `CENTILE_V1`, `IMP_MIN_V2`, `IMP_MAX_V3` dans le script ;
