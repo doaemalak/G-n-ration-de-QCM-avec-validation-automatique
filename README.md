@@ -15,20 +15,30 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 ```
 .
 ├── README.md                  ← ce fichier
-├── requirements.txt           ← dépendances Python
+├── CONTRIBUTING.md            ← état du projet, ce qui reste à faire, conventions
+├── Makefile                   ← raccourcis : verifier, exporter, tableaux, test
+├── requirements.txt           ← dépendances Python (sans GPU)
+├── requirements-gpu.txt       ← bitsandbytes, accelerate (Colab T4)
+├── requirements-dev.txt       ← pytest et dépendances des scripts (CI)
 ├── .gitignore
 ├── notebooks/
 │   └── QCM_generation_validation.ipynb   ← LIVRABLE 1 : notebook exécuté de bout en bout
+├── scripts/                   ← OUTILS D'APRÈS-NOTEBOOK (aucun modèle, aucun GPU)
+│   ├── verifier_sorties.py    ← cohérence des artefacts versionnés
+│   ├── exporter_qcm.py        ← Moodle GIFT + HTML + CSV des QCM acceptés
+│   └── tableaux_resultats.py  ← régénère les tableaux de l'article
+├── tests/                     ← pytest sur les scripts ci-dessus
 ├── data/
 │   ├── raw/                   ← 6 supports de cours PDF (non versionnés) + sources.csv
 │   ├── processed/             ← textes nettoyés et passages découpés (passages.jsonl)
 │   └── annotations/           ← grilles d'évaluation humaine (60 QCM, ≥ 2 évaluateurs)
 ├── outputs/
 │   ├── qcm/                   ← QCM générés (base, LLM), acceptés et rejetés par le validateur
+│   ├── export/                ← GIFT/HTML/CSV, régénérés (non versionnés)
 │   └── figures/               ← graphiques utilisés dans l'article
 └── docs/
     ├── Analyse_des_besoins_Sujet11_QCM.pdf
-    └── article/               ← LIVRABLE 2 : article de 7 pages maximum
+    └── article/               ← LIVRABLE 2 : article (≤ 7 pages) + tableaux générés
 ```
 
 **Pourquoi tout le code est dans le notebook et pas dans un dossier `src/`.** Le notebook est le livrable noté. À l'oral, l'enseignant demande « que fait cette cellule ? ». Tout garder dans le notebook permet de lire le projet de haut en bas sans aller-retour entre fichiers, et de l'exécuter tel quel sur Colab.
@@ -49,6 +59,8 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | 🟡 grille, guide et analyses prêts ; annotations à faire après l'étape 5 |
 | 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température : sur GPU) |
 | 11 | Analyse des erreurs (typologie des rejets, hallucinations, erreurs du validateur), limites, éthique | ✅ |
+| — | Export des QCM acceptés (Moodle GIFT, HTML, CSV) — besoin BF13 de l'analyse des besoins | ✅ `scripts/exporter_qcm.py` |
+| — | Livrable 2 : article ≤ 7 pages et tableaux de résultats | 🟡 `docs/article/article.md`, marqueurs « À COMPLÉTER » |
 
 ## Exécution
 
@@ -70,6 +82,42 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 pip install -r requirements.txt
 jupyter notebook notebooks/QCM_generation_validation.ipynb
 ```
+Sur GPU, ajouter `pip install -r requirements-gpu.txt` (le notebook le fait lui-même s'il
+le faut). `bitsandbytes` n'est volontairement pas dans `requirements.txt` : il ne
+s'installe pas sur toutes les machines sans CUDA.
+
+## Outils d'après-notebook
+
+Trois scripts lisent les sorties déjà produites ; ils ne relancent aucun modèle et
+tournent sans GPU ni PDF. `make` enchaîne les quatre commandes.
+
+```bash
+make verifier     # invariants de tous les artefacts (schéma des QCM, décisions, caches)
+make exporter     # outputs/export/qcm_moodle_gift.txt, qcm.html, qcm.csv
+make tableaux     # docs/article/resultats_auto.md depuis outputs/qcm/
+make test         # pytest (formats, contrôles, chemins multi-méthodes)
+```
+
+- **`verifier_sorties.py`** vérifie 4 000 invariants : 4 options distinctes, `reponse ==
+  options[index_correct]`, partition acceptés/rejetés, `forme_ok` cohérent avec les sept
+  règles, seuil V1 reproduit depuis le contrôle négatif, caches complets et comparables.
+  Il avertit (sans échouer) quand les QCM du LLM ou les annotations manquent encore.
+- **`exporter_qcm.py`** produit une banque de questions Moodle (format GIFT), une page
+  HTML autonome pour relire les QCM en cours, et un CSV pour Excel. C'est le besoin
+  BF13 de `docs/Analyse_des_besoins_Sujet11_QCM.pdf`, absent du notebook.
+- **`tableaux_resultats.py`** recalcule les tableaux de l'article depuis les fichiers :
+  un chiffre cité ne peut plus être périmé ni copié à la main. Il ajoute
+  automatiquement la ligne `llm` et les kappas dès que ces données existent.
+
+La CI (`.github/workflows/verifications.yml`) exécute le vérificateur, les tests et les
+deux générateurs à chaque *push*.
+
+## État et suite
+
+Ce qui reste à faire est détaillé dans `CONTRIBUTING.md` : générer les QCM du LLM sur
+Colab (étape 5), faire remplir les deux grilles d'annotation (étape 9), puis finaliser
+l'article (`docs/article/README.md`). Les sections concernées de l'article portent un
+marqueur **À COMPLÉTER** ; les tableaux se mettent à jour tout seuls.
 
 ## Données
 

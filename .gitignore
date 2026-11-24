@@ -15,6 +15,12 @@ hf_cache/
 # PDF de cours fournis par l'enseignant : droits de diffusion à vérifier avant de les publier
 data/raw/*.pdf
 
+# Sorties dérivées (régénérées par scripts/exporter_qcm.py, Makefile)
+outputs/export/
+
+# Tests
+.pytest_cache/
+
 # Système
 .DS_Store
 Thumbs.db
