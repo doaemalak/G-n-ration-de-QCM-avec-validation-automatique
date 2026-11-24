@@ -3,13 +3,14 @@
 
 PYTHON ?= python3
 
-.PHONY: aide verifier exporter tableaux article test tout propre
+.PHONY: aide verifier exporter tableaux article archive-colab test tout propre
 
 aide:
 	@echo "make verifier   — contrôle la cohérence des sorties versionnées"
 	@echo "make exporter   — Moodle GIFT + HTML + CSV des QCM acceptés"
 	@echo "make tableaux   — régénère docs/article/resultats_auto.md"
 	@echo "make article    — rend docs/article/article.pdf (≤ 7 pages)"
+	@echo "make archive-colab — zip du dépôt à téléverser dans Colab (sans GitHub)"
 	@echo "make test       — lance pytest"
 	@echo "make tout       — verifier + exporter + tableaux + test"
 	@echo "make propre     — supprime les exports et les caches de test"
@@ -22,6 +23,17 @@ exporter:
 
 tableaux:
 	$(PYTHON) scripts/tableaux_resultats.py
+
+# Archive pour Colab : dépôt + PDF de data/raw s'ils sont présents, sans .git.
+# À téléverser dans le panneau Fichiers de Colab, puis :
+#   !unzip -q /content/taln-colab.zip -d /content/TALN
+# La cellule 2 du notebook détecte le dépôt et ne clone rien.
+archive-colab:
+	@rm -f taln-colab.zip
+	@zip -qr taln-colab.zip . -x ".git/*" ".venv/*" "*/__pycache__/*" ".pytest_cache/*" \
+	  "outputs/export/*" "docs/article/*.pdf" "taln-colab.zip" "*.DS_Store" "*.pyc"
+	@echo "taln-colab.zip : $$(du -h taln-colab.zip | cut -f1)"
+	@ls data/raw/*.pdf >/dev/null 2>&1 || echo "⚠ data/raw/ ne contient aucun PDF : les ajouter avant l'archive, sinon les téléverser dans Colab."
 
 # Rendu vérifié : 7 pages A4 à 10 pt avec 1,8 cm de marge.
 article:

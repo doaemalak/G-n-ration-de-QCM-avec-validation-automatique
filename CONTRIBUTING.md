@@ -43,6 +43,8 @@ cellule de chargement du LLM ; sinon `pip install -r requirements-gpu.txt`.
 ### 1. Générer les QCM du LLM (GPU)
 
 Modèle par défaut : `Qwen/Qwen3-4B-Instruct-2507` (voir `docs/llm/CHOIX_MODELE.md`).
+Sans accès GitHub dans le navigateur, utiliser `make archive-colab` et téléverser le zip
+dans Colab (voir README) : le notebook détecte le dépôt et ne clone rien.
 Pour une ablation, changer `QCM_LLM_MODEL` **et** `QCM_LLM_CACHE` : le notebook refuse
 un cache produit par un autre modèle.
 

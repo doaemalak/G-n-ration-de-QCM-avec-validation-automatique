@@ -21,6 +21,9 @@ outputs/export/
 # Tests
 .pytest_cache/
 
+# Archive Colab (générée par `make archive-colab`)
+taln-colab.zip
+
 # Système
 .DS_Store
 Thumbs.db
