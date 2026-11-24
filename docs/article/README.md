@@ -13,7 +13,7 @@ dans le dépôt :
 | Section | Dépend de | Commande ensuite |
 |---|---|---|
 | 4.2 et 6.2 (LLM) | `outputs/qcm/qcm_llm.jsonl` (étape 5, GPU) | réexécuter les étapes 6 à 8 du notebook |
-| 6.3 et 8 (évaluation humaine) | `data/annotations/grille_evaluateur_{A,B}.csv` | réexécuter l'étape 9 |
+| 6.3 et 8 (évaluation humaine) | `data/annotations/grille_evaluateur_{A,B}.csv` | réexécuter l'étape 9 ; le tableau 13 ajoute la matrice de confusion, la précision, le rappel et le F1 du filtre |
 | 7 (température, mDeBERTa) | GPU | étapes 10.4 et 10.5 |
 
 Après chaque mise à jour :

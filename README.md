@@ -16,6 +16,7 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 .
 ├── README.md                  ← ce fichier
 ├── CONTRIBUTING.md            ← état du projet, ce qui reste à faire, conventions
+├── CHANGELOG.md               ← journal des changements (bugs corrigés, mesures ajoutées)
 ├── Makefile                   ← raccourcis : verifier, exporter, tableaux, test
 ├── requirements.txt           ← dépendances Python (sans GPU)
 ├── requirements-gpu.txt       ← bitsandbytes, accelerate (Colab T4)

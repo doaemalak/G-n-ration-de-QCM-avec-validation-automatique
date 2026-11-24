@@ -141,3 +141,76 @@ def test_tableaux_multi_methodes_quand_le_llm_arrive(tmp_path, monkeypatch):
     assert set(df.index) == {"base", "llm"}
     titre, df = tab.tableau_cascade(donnees)
     assert "llm" in df.index
+
+
+# --------------------------------------------------------------------------- #
+# Évaluation humaine : le filtre comme classifieur (BF12)
+# --------------------------------------------------------------------------- #
+def _depot_avec_annotations(tmp_path: Path) -> tuple[Path, Path, pd.DataFrame]:
+    """Copie minimale du dépôt + une clé et deux grilles synthétiques complètes."""
+    qcm_dir = tmp_path / "outputs" / "qcm"
+    qcm_dir.mkdir(parents=True)
+    shutil.copytree(ROOT / "data", tmp_path / "data")
+    for nom in ("qcm_base.jsonl", "validation.csv", "controles_forme.csv",
+                "scores_ablation.jsonl", "typologie_rejets.csv", "sensibilite_seuils.csv"):
+        shutil.copy(ROOT / "outputs" / "qcm" / nom, qcm_dir / nom)
+
+    val = pd.read_csv(qcm_dir / "validation.csv")
+    val["accepte"] = val[["forme_ok", "V1", "V2", "V3"]].all(axis=1)
+    cle = val[["qcm_id", "methode", "accepte"]].copy()
+    cle.insert(0, "eval_id", [f"EVAL_{i + 1:02d}" for i in range(len(cle))])
+    cle.to_csv(tmp_path / "data" / "annotations" / "cle_echantillon.csv", index=False)
+
+    for evaluateur in ("A", "B"):
+        grille = pd.DataFrame({
+            "eval_id": cle["eval_id"], "cours": cle["methode"], "passage": "",
+            "question": "question", "A": "a", "B": "b", "C": "c", "D": "d",
+            "bonne_reponse_indiquee": "A", "clarte": 3, "difficulte": 2,
+            "unicite": 1, "commentaire": "",
+        })
+        # Quelques défauts, pour que les métriques ne soient pas triviales.
+        grille.loc[::5, "clarte"] = 1
+        grille.loc[::3, "difficulte"] = 1
+        grille.loc[::4, "difficulte"] = 3
+        grille.loc[::7, "unicite"] = 0
+        grille.to_csv(tmp_path / "data" / "annotations" / f"grille_evaluateur_{evaluateur}.csv",
+                      sep=";", index=False, encoding="utf-8-sig")
+    return tmp_path, qcm_dir, cle
+
+
+def test_tableau_annotations_calcule_matrice_de_confusion(tmp_path, monkeypatch):
+    """Sans ce test, le chemin des annotations n'était jamais exécuté : il levait
+    ``KeyError: 'accepte'`` à cause d'une fusion avec une colonne homonyme."""
+    depot, qcm_dir, cle = _depot_avec_annotations(tmp_path)
+    monkeypatch.setattr(tab, "ROOT", depot)
+    monkeypatch.setattr(tab, "QCM_DIR", qcm_dir)
+    monkeypatch.setattr(tab, "DATA_DIR", depot / "data")
+
+    donnees = tab.charger()
+    titre, tables = tab.tableau_annotations(donnees)
+    assert "Évaluation humaine" in titre
+    assert len(tables) == 3
+    kappas, qualite, classifieur = tables
+    assert set(kappas["Critère"]) == {"clarte", "difficulte", "unicite"}
+    assert {"Qualité avant filtre (%)", "Apport (points)"} <= set(qualite.columns)
+    assert {"F1 (%)", "Précision (%)", "Rappel (%)"} <= set(classifieur.columns)
+
+    ligne = classifieur.loc[("stricte (A et B)", "toutes")]
+    vp, fp, fn, vn = (int(ligne[c]) for c in
+                      ("Vrais positifs", "Faux positifs", "Faux négatifs", "Vrais négatifs"))
+    assert vp + fp + fn + vn == len(cle)
+
+    # Vérification indépendante : on relit la grille et la clé, et on recompte.
+    grille = pd.read_csv(depot / "data" / "annotations" / "grille_evaluateur_A.csv",
+                         sep=";", encoding="utf-8-sig")
+    humain = ((grille["clarte"] >= 2) & (grille["unicite"] == 1)).to_numpy(bool)
+    filtre = cle["accepte"].to_numpy(bool)
+    assert (vp, fp, fn, vn) == (int((filtre & humain).sum()), int((filtre & ~humain).sum()),
+                                int((~filtre & humain).sum()), int((~filtre & ~humain).sum()))
+    precision, rappel = vp / (vp + fp), vp / (vp + fn)
+    assert ligne["Précision (%)"] == pytest.approx(100 * precision, abs=0.05)
+    assert ligne["Rappel (%)"] == pytest.approx(100 * rappel, abs=0.05)
+    assert ligne["F1 (%)"] == pytest.approx(200 * precision * rappel / (precision + rappel), abs=0.05)
+
+    # Une ligne par méthode, en plus de la ligne « toutes ».
+    assert ("stricte (A et B)", "base") in classifieur.index

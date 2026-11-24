@@ -103,6 +103,10 @@ python3 scripts/verifier_sorties.py   # doit afficher « Toutes les sorties sont
 python3 -m pytest -q                  # doit passer
 ```
 
+Noter les changements qui ne se lisent pas dans le notebook (bug corrigé, mesure
+ajoutée, chiffre de l'article modifié) dans `CHANGELOG.md`, avec la commande qui permet
+de les vérifier.
+
 La CI (`.github/workflows/verifications.yml`) exécute ces deux commandes à chaque
 *push* et *pull request*. Les avertissements (QCM du LLM absents, grilles vides) sont
 attendus tant que les étapes GPU et humaines ne sont pas faites ; `--strict` les

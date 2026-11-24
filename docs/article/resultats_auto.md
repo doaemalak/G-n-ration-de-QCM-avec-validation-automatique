@@ -7,7 +7,7 @@ l'étape 5 exécutée sur GPU.
 
 ## Tableau 1 — Corpus et passages
 
-| index | Titre | Auteur | Format | Pages | Mots brut | Mots nettoyés | % retiré | Passages | Mots/passage | Tokens max |
+| Cours | Titre | Auteur | Format | Pages | Mots brut | Mots nettoyés | % retiré | Passages | Mots/passage | Tokens max |
 |---|---|---|---|---|---|---|---|---|---|---|
 | C1 | Programmation en langage C | Anne Canteaut (INRIA) | polycopié LaTeX | 133 | 36361 | 23243 | 36,1 | 130 | 164 | 452 |
 | C2 | Le langage C | Patrick Trau | polycopié | 71 | 20292 | 12452 | 38,6 | 81 | 151 | 458 |
@@ -15,7 +15,7 @@ l'étape 5 exécutée sur GPU.
 | C4 | Programmation en langage C | M. Qbadou (ENSET Mohammedia), 2022/2023 | polycopié Word | 68 | 11764 | 5663 | 51,9 | 34 | 127 | 392 |
 | C5 | Initiation au langage C | non indiqué | polycopié LaTeX | 52 | 14726 | 8145 | 44,7 | 55 | 137 | 448 |
 | C6 | Cours de langage C | Jacquelin Charbonnel (CNRS) | diapositives | 60 | 10126 | 3730 | 63,2 | 27 | 114 | 445 |
-| Total | Total | 6 cours |  | 460 | 114384 | 66480 | 41,9 | 415 | 145 | 458 |
+| Total |  | 6 cours |  | 460 | 114384 | 66480 | 41,9 | 415 | 145 | 458 |
 
 ## Tableau 2 — Couverture et rendement par méthode
 > QCM du LLM absents (étape 5 non exécutée sur GPU) : la comparaison base / LLM reste à compléter.

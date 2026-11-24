@@ -16,7 +16,8 @@ Ce qui est produit
 - cascade des motifs de rejet et typologie des rejets ;
 - ablations (contrôles, modèles QA/NLI) et sensibilité aux seuils ;
 - biais de longueur ;
-- évaluation humaine (kappa, apport du filtre) **si** les grilles existent.
+- évaluation humaine (kappa, apport du filtre, matrice de confusion, précision,
+  rappel et F1 du filtre comme classifieur) **si** les grilles existent.
 
 Le script ne relance aucun modèle : il lit uniquement les caches et les CSV
 versionnés, comme ``scripts/verifier_sorties.py``. Il utilise pandas, numpy,
@@ -140,15 +141,16 @@ def tableau_donnees(donnees: dict) -> tuple[str, pd.DataFrame]:
                             "passages": "Passages", "mots_moyens": "Mots/passage",
                             "tokens_max": "Tokens max"})
     total = pd.DataFrame([{
-        "Titre": "Total", "Auteur": f"{len(src)} cours", "Format": "",
+        "Titre": "", "Auteur": f"{len(src)} cours", "Format": "",
         "Pages": int(src["n_pages"].sum()), "Mots brut": int(src["n_mots_brut"].sum()),
         "Mots nettoyés": int(src["n_mots_nettoye"].sum()),
         "% retiré": round(100 * (1 - src["n_mots_nettoye"].sum() / src["n_mots_brut"].sum()), 1),
         "Passages": len(pas), "Mots/passage": int(pas["n_mots"].mean()),
         "Tokens max": int(pas["n_tokens"].max()),
     }], index=["Total"])
+    df.index.name = "Cours"
+    total.index.name = "Cours"
     df = pd.concat([df, total[df.columns]]).fillna("")
-    return "Tableau 1 — Corpus et passages", df
     return "Tableau 1 — Corpus et passages", df
 
 
@@ -466,7 +468,14 @@ def tableau_longueur(donnees: dict) -> tuple[str, pd.DataFrame]:
 
 
 def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
-    """Kappa et apport du filtre, si les deux grilles existent."""
+    """Kappa, apport du filtre et métriques de classifieur, si les deux grilles existent.
+
+    Le filtre est évalué comme un classifieur binaire du verdict humain :
+    positifs = QCM jugés acceptables. La matrice de confusion distingue les
+    vrais positifs (bons QCM gardés), faux positifs (mauvais QCM gardés), faux
+    négatifs (bons QCM rejetés) et vrais négatifs (mauvais QCM rejetés), puis
+    donne précision, rappel et F1 (exigence BF12 de l'analyse des besoins).
+    """
     cle = DATA_DIR / "annotations" / "cle_echantillon.csv"
     grilles = {e: DATA_DIR / "annotations" / f"grille_evaluateur_{e}.csv" for e in ("A", "B")}
     if not cle.exists() or not all(p.exists() for p in grilles.values()):
@@ -525,23 +534,43 @@ def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
             })
     qualite = pd.DataFrame(lignes)
 
-    # Le filtre comme classifieur du verdict humain strict.
-    d = d.merge(val[["qcm_id", "accepte"]], on="qcm_id")
-    vrais_positifs = int((d["accepte"] & (d["strict"] == 1)).sum())
-    faux_positifs = int((d["accepte"] & (d["strict"] == 0)).sum())
-    faux_negatifs = int((~d["accepte"] & (d["strict"] == 1)).sum())
-    precision = vrais_positifs / (vrais_positifs + faux_positifs) if vrais_positifs + faux_positifs else np.nan
-    rappel = vrais_positifs / (vrais_positifs + faux_negatifs) if vrais_positifs + faux_negatifs else np.nan
-    confusion = pd.DataFrame([{
-        "QCM acceptés par le filtre": int(d["accepte"].sum()),
-        "dont jugés acceptables": vrais_positifs,
-        "QCM rejetés par le filtre": int((~d["accepte"]).sum()),
-        "dont jugés inacceptables": int((~d["accepte"] & (d["strict"] == 0)).sum()),
-        "Précision du filtre (%)": round(100 * precision, 1),
-        "Rappel des défauts (%)": round(100 * rappel, 1) if not np.isnan(rappel) else np.nan,
-    }])
-    return "Tableau 13 — Évaluation humaine (sans intervalle de confiance ; le notebook fait foi)", \
-        [kappas.reset_index(), qualite, confusion]
+    # Le filtre comme classifieur du verdict humain (BF12) : matrice de confusion 2×2,
+    # précision, rappel et F1, pour le verdict strict et le verdict indulgent. `d`
+    # contient déjà la décision du filtre (colonne `accepte` de la clé d'échantillon) ;
+    # on la remplace par la décision recalculée depuis validation.csv pour rester
+    # cohérent avec les autres tableaux (et éviter une collision de colonnes).
+    if "accepte" in d:
+        d = d.drop(columns=["accepte"])
+    d = d.merge(val[["qcm_id", "accepte"]], on="qcm_id", how="left")
+    d["accepte"] = d["accepte"].fillna(False).astype(bool)
+
+    lignes_conf = []
+    for regle, libelle in (("strict", "stricte (A et B)"), ("indulgent", "indulgente (A ou B)")):
+        for methode in ["toutes"] + methodes(donnees):
+            g = d if methode == "toutes" else d[d["methode"] == methode]
+            if g.empty:
+                continue
+            filtre = g["accepte"].astype(bool)
+            humain = g[regle].astype(bool)
+            vp = int((filtre & humain).sum())
+            fp = int((filtre & ~humain).sum())
+            fn = int((~filtre & humain).sum())
+            vn = int((~filtre & ~humain).sum())
+            precision = vp / (vp + fp) if vp + fp else np.nan
+            rappel = vp / (vp + fn) if vp + fn else np.nan
+            f1 = 2 * precision * rappel / (precision + rappel) if precision + rappel else np.nan
+            lignes_conf.append({
+                "Règle": libelle, "Méthode": methode,
+                "Vrais positifs": vp, "Faux positifs": fp,
+                "Faux négatifs": fn, "Vrais négatifs": vn,
+                "Précision (%)": round(100 * precision, 1) if not np.isnan(precision) else np.nan,
+                "Rappel (%)": round(100 * rappel, 1) if not np.isnan(rappel) else np.nan,
+                "F1 (%)": round(100 * f1, 1) if not np.isnan(f1) else np.nan,
+            })
+    classifieur = pd.DataFrame(lignes_conf).set_index(["Règle", "Méthode"])
+    return ("Tableau 13 — Évaluation humaine "
+            "(le notebook fait foi pour les intervalles de confiance)",
+            [kappas.reset_index(), qualite, classifieur])
 
 
 # --------------------------------------------------------------------------- #

@@ -240,7 +240,10 @@ extractives, taux de passage de chaque test, rendement par cours. Les tableaux d
 ### 6.3 Évaluation humaine
 
 **À COMPLÉTER** après les annotations : kappa par critère, qualité avant et après
-filtre, précision des rejets, rappel des défauts, intervalles de confiance.
+filtre, précision des rejets, rappel des défauts, intervalles de confiance. Le filtre
+est aussi évalué comme un **classifieur binaire** du verdict humain : matrice de
+confusion 2×2 (bons QCM gardés, mauvais gardés, bons rejetés, mauvais rejetés),
+précision, rappel et F1 (tableau 13 de `resultats_auto.md`).
 
 ## 7. Ablations et sensibilité
 
