@@ -18,6 +18,9 @@ data/raw/*.pdf
 # Sorties dérivées (régénérées par scripts/exporter_qcm.py, Makefile)
 outputs/export/
 
+# Brouillons de pré-annotation (non versionnés)
+data/annotations/*_draft.csv
+
 # Tests
 .pytest_cache/
 
