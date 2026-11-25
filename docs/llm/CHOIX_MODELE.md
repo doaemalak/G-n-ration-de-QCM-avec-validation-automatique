@@ -2,8 +2,9 @@
 
 Le notebook a été écrit avec **Qwen2.5-7B-Instruct** (décembre 2024). Depuis, des
 modèles deux à trois fois plus petits font mieux sur les benchmarks publics, à licence
-comparable et pour une mémoire GPU bien inférieure. Aucun QCM du LLM n'étant encore
-généré, le changement ne coûte rien : il évite de dépenser le GPU sur un modèle dépassé.
+comparable et pour une mémoire GPU bien inférieure. Le changement a été fait avant la
+génération des 115 QCM ; il n'a rien coûté et évite de dépenser le GPU sur un modèle
+dépassé.
 
 Ce document justifie le choix retenu, liste les alternatives examinées et décrit
 l'ablation à faire pour trancher **sur notre corpus** plutôt que sur des fiches modèles.
@@ -96,7 +97,7 @@ Critère de décision : à taux d'acceptation comparable, garder le modèle qui 
 plus de QCM acceptés par minute de GPU. Si SmolLM3 fait jeu égal, le préférer pour son
 français natif et sa taille.
 
-*État : protocole défini, non exécuté (aucun GPU dans l'environnement de rédaction).*
+*État : Qwen3-4B exécuté sur 115 QCM (95,8 % valides) ; SmolLM3 non exécuté.*
 
 ## 6. Sources
 

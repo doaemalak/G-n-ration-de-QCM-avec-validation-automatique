@@ -50,7 +50,7 @@ def test_les_seuils_reproduisent_les_decisions_du_notebook():
     calcule = tab.decisions(donnees)
     attendu = reference.set_index("qcm_id").loc[val["qcm_id"], "accepte"].to_numpy()
     assert np.array_equal(calcule.to_numpy(), attendu)
-    assert calcule.mean() == pytest.approx(61 / 97, abs=1e-3)
+    assert calcule.mean() == pytest.approx(attendu.mean(), abs=1e-9)
 
 
 def test_controle_des_seuils_refuse_une_decision_incoherente(monkeypatch):
@@ -99,41 +99,12 @@ def test_donnees_et_passages():
     assert "C6" in df.index
 
 
-def test_tableaux_multi_methodes_quand_le_llm_arrive(tmp_path, monkeypatch):
-    """Simule un dépôt avec QCM du LLM : deux méthodes doivent apparaître partout."""
-    qcm_dir = tmp_path / "outputs" / "qcm"
-    qcm_dir.mkdir(parents=True)
-    shutil.copytree(ROOT / "data", tmp_path / "data")
-    for nom in ("qcm_base.jsonl", "validation.csv", "controles_forme.csv",
-                "scores_ablation.jsonl", "typologie_rejets.csv", "sensibilite_seuils.csv"):
-        shutil.copy(ROOT / "outputs" / "qcm" / nom, qcm_dir / nom)
-
-    base = [json.loads(l) for l in (qcm_dir / "qcm_base.jsonl").read_text(encoding="utf-8").splitlines()]
-    llm = [{**q, "qcm_id": q["qcm_id"].replace("BASE_", "LLM_"), "methode": "llm"}
-           for q in base[:20]]
-    (qcm_dir / "qcm_llm.jsonl").write_text("\n".join(json.dumps(q, ensure_ascii=False) for q in llm),
-                                           encoding="utf-8")
-
-    # Les 20 passages ont maintenant deux QCM (base + llm) : on duplique les lignes d'analyse.
-    correspondance = {q["qcm_id"]: q["qcm_id"].replace("BASE_", "LLM_") for q in base[:20]}
-    for nom in ("validation.csv", "controles_forme.csv"):
-        table = pd.read_csv(qcm_dir / nom)
-        copies = table[table["qcm_id"].isin(correspondance)].copy()
-        copies["qcm_id"] = copies["qcm_id"].map(correspondance)
-        copies["methode"] = "llm"
-        pd.concat([table, copies]).to_csv(qcm_dir / nom, index=False)
-    typo = pd.read_csv(qcm_dir / "typologie_rejets.csv")
-    copies = typo[typo["qcm_id"].isin(correspondance)].copy()
-    copies["qcm_id"] = copies["qcm_id"].map(correspondance)
-    copies["methode"] = "llm"
-    pd.concat([typo, copies]).to_csv(qcm_dir / "typologie_rejets.csv", index=False)
-
-    monkeypatch.setattr(tab, "ROOT", tmp_path)
-    monkeypatch.setattr(tab, "QCM_DIR", qcm_dir)
-    monkeypatch.setattr(tab, "DATA_DIR", tmp_path / "data")
-
+def test_tableaux_multi_methodes_avec_le_llm_reel():
+    """Le dépôt contient désormais les QCM du LLM : les tableaux doivent avoir deux lignes."""
     donnees = tab.charger()
     assert set(tab.methodes(donnees)) == {"base", "llm"}
+    assert len(donnees["base"]) == 97
+    assert len(donnees["llm"]) == 115
     texte = tab.construire(donnees)
     assert "| llm |" in texte
 
@@ -151,7 +122,7 @@ def _depot_avec_annotations(tmp_path: Path) -> tuple[Path, Path, pd.DataFrame]:
     qcm_dir = tmp_path / "outputs" / "qcm"
     qcm_dir.mkdir(parents=True)
     shutil.copytree(ROOT / "data", tmp_path / "data")
-    for nom in ("qcm_base.jsonl", "validation.csv", "controles_forme.csv",
+    for nom in ("qcm_base.jsonl", "qcm_llm.jsonl", "validation.csv", "controles_forme.csv",
                 "scores_ablation.jsonl", "typologie_rejets.csv", "sensibilite_seuils.csv"):
         shutil.copy(ROOT / "outputs" / "qcm" / nom, qcm_dir / nom)
 
@@ -214,3 +185,20 @@ def test_tableau_annotations_calcule_matrice_de_confusion(tmp_path, monkeypatch)
 
     # Une ligne par méthode, en plus de la ligne « toutes ».
     assert ("stricte (A et B)", "base") in classifieur.index
+
+
+def test_sensibilite_par_methode():
+    """Avec deux générateurs, la sensibilité doit garder une ligne par méthode."""
+    _, df = tab.tableau_sensibilite(tab.charger())
+    assert len(df) == 6
+    assert set(df.index.get_level_values("Méthode")) == {"base", "llm"}
+
+
+def test_calibration_globale_et_par_methode():
+    """Le seuil global pénalise la base ; le seuil par méthode rétablit 5 % par méthode."""
+    _, df = tab.tableau_calibration_methodes(tab.charger())
+    assert df.loc[("global (déployé)", "base"), "V1 (%)"] == pytest.approx(44.3)
+    assert df.loc[("global (déployé)", "llm"), "Fausse acceptation (%)"] == pytest.approx(9.6)
+    assert df.loc[("par méthode", "base"), "Seuil V1"] == pytest.approx(-8.80, abs=1e-2)
+    assert df.loc[("par méthode", "base"), "Acceptés"] == 61
+    assert df.loc[("par méthode", "llm"), "Acceptés"] == 29

@@ -206,3 +206,18 @@ def test_mode_strict_echoue_sur_avertissement(copie, capsys):
     code = verif.principal(["--strict"])
     assert code == 1
     assert "--strict" in capsys.readouterr().out
+
+
+def test_temperature_cache_sans_controle_negatif_est_tolere(copie):
+    """Les QCM de l'ablation de température n'ont pas de qa_score_neg (NaN) :
+    ils ne doivent pas être jugés comme des QCM principaux incohérents."""
+    scores = _lire_jsonl(copie / "outputs" / "qcm" / "scores_validateur.jsonl")
+    modele = next(s for s in scores if s.get("signature"))
+    scores.append({**modele, "qcm_id": "LLM_C1_000_T0.7", "qa_score_neg": float("nan")})
+    _reecrire_jsonl(copie / "outputs" / "qcm" / "scores_validateur.jsonl", scores)
+
+    rapport = verif.Rapport()
+    passages, _ = verif.verifier_passages(rapport)
+    fichiers = verif.verifier_qcm(rapport, passages)
+    verif.verifier_caches(rapport, fichiers)
+    assert not any("qa_score_neg non numérique" in e for e in rapport.erreurs)

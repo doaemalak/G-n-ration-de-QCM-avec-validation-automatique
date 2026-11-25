@@ -54,19 +54,19 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 2 | Extraction et nettoyage du texte (accents LaTeX, code, sommaires, en-têtes) | ✅ |
 | 3 | Découpage en passages | ✅ |
 | 4 | Base de référence : questions à trous + distracteurs par embeddings | ✅ |
-| 5 | Modèle avancé : LLM ouvert Qwen3-4B-Instruct-2507 (prompt few-shot, sortie JSON) | 🟡 code prêt, génération à lancer sur Colab |
+| 5 | Modèle avancé : LLM ouvert Qwen3-4B-Instruct-2507 (prompt few-shot, sortie JSON) | ✅ 115/120 QCM valides (95,8 %), cache versionné |
 | 6 | Contrôles de forme (7 règles testées, biais de longueur) | ✅ |
 | 7 | Validateur V1 / V2 / V3 (questions-réponses SQuAD 2.0 + NLI, seuil V1 par contrôle négatif) | ✅ |
 | 8 | Filtrage final (forme ET V1 ET V2 ET V3), motifs de rejet, rendement, candidats naïfs | ✅ |
-| 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | 🟡 grille, guide et analyses prêts ; annotations à faire après l'étape 5 |
-| 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température : sur GPU) |
+| 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | 🟡 grilles de 60 QCM créées ; annotations des deux évaluateurs à faire |
+| 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température inclus) |
 | 11 | Analyse des erreurs (typologie des rejets, hallucinations, erreurs du validateur), limites, éthique | ✅ |
 | — | Export des QCM acceptés (Moodle GIFT, HTML, CSV) — besoin BF13 de l'analyse des besoins | ✅ `scripts/exporter_qcm.py` |
-| — | Livrable 2 : article ≤ 7 pages et tableaux de résultats | 🟡 `docs/article/article.md`, marqueurs « À COMPLÉTER » |
+| — | Livrable 2 : article ≤ 7 pages et tableaux de résultats | 🟡 article à jour (7 pages) ; sections 6.3 et 8 en attente des annotations |
 
 ## Exécution
 
-**Sur Google Colab (nécessaire pour l'étape 5, qui demande un GPU) :**
+**Sur Google Colab (nécessaire pour régénérer l'étape 5 ; les résultats actuels sont déjà dans le dépôt) :**
 1. Créer un jeton GitHub : *GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens*. Le limiter à ce dépôt, avec le droit *Contents : Read and write*.
 2. Dans Colab : *Fichier → Ouvrir un notebook → GitHub*, cocher « Inclure les dépôts privés », puis ouvrir `notebooks/QCM_generation_validation.ipynb`.
 3. Ajouter le jeton dans les secrets Colab (icône 🔑 à gauche) sous le nom `GITHUB_TOKEN`, et activer l'accès au notebook. Il ne faut jamais écrire le jeton dans une cellule.
@@ -138,10 +138,11 @@ deux générateurs à chaque *push*.
 
 ## État et suite
 
-Ce qui reste à faire est détaillé dans `CONTRIBUTING.md` : générer les QCM du LLM sur
-Colab (étape 5), faire remplir les deux grilles d'annotation (étape 9), puis finaliser
-l'article (`docs/article/README.md`). Les sections concernées de l'article portent un
-marqueur **À COMPLÉTER** ; les tableaux se mettent à jour tout seuls.
+Les QCM du LLM sont générés (115/120) et l'article est à jour pour le LLM et les
+ablations. Ce qui reste est détaillé dans `CONTRIBUTING.md` : faire remplir les deux
+grilles d'annotation (60 QCM, deux évaluateurs), réexécuter l'analyse humaine, puis
+finaliser les sections 6.3 et 8. Les tableaux se mettent à jour tout seuls avec
+`python3 scripts/tableaux_resultats.py`.
 
 ## Choix du générateur LLM
 

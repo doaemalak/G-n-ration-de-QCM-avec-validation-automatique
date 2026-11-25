@@ -440,18 +440,22 @@ def tableau_sensibilite(donnees: dict) -> tuple[str, pd.DataFrame]:
                "V2 : implication min. de la bonne réponse": IMP_MIN_V2,
                "V3 : implication max. d'un distracteur": IMP_MAX_V3}
     lignes = []
-    for seuil, g in sens.groupby("seuil"):
+    # Une ligne par (seuil, méthode) : depuis l'arrivée du LLM, les deux générateurs
+    # ont leurs propres valeurs. Grouper seulement par seuil mélangerait base et LLM.
+    for (seuil, methode), g in sens.groupby(["seuil", "methode"], sort=False):
         defaut = defauts.get(seuil, np.nan)
         proche = g.iloc[(g["valeur"] - defaut).abs().argsort()[:1]]
         lignes.append({
             "Seuil": seuil,
+            "Méthode": methode,
             "Valeurs testées": f"{fr(g['valeur'].min(), 3).rstrip('0').rstrip(',')} – "
                                f"{fr(g['valeur'].max(), 3).rstrip('0').rstrip(',')}",
             "Valeur retenue": defaut,
             "% acceptés à la valeur retenue": round(float(proche["% acceptés"].iloc[0]), 1),
             "% acceptés : min – max sur la plage": f"{fr(g['% acceptés'].min())} – {fr(g['% acceptés'].max())}",
         })
-    return "Tableau 11 — Sensibilité aux seuils", pd.DataFrame(lignes).set_index("Seuil")
+    return "Tableau 11 — Sensibilité aux seuils", \
+        pd.DataFrame(lignes).set_index(["Seuil", "Méthode"])
 
 
 def tableau_longueur(donnees: dict) -> tuple[str, pd.DataFrame]:
@@ -465,6 +469,41 @@ def tableau_longueur(donnees: dict) -> tuple[str, pd.DataFrame]:
                        "p (H0 : 25 %)": round(binomtest(k, len(df), 0.25).pvalue, 3)})
     return "Tableau 12 — Biais de longueur (test binomial contre 25 %)", \
         pd.DataFrame(lignes).set_index("Méthode")
+
+
+def tableau_calibration_methodes(donnees: dict) -> tuple[str, pd.DataFrame]:
+    """Compare le seuil V1 global (déployé) et un seuil calibré par méthode.
+
+    Le seuil global est le 95e centile des scores négatifs des deux générateurs
+    réunis. Comme les questions du LLM sont moins ancrées dans le passage, leurs
+    scores négatifs sont plus élevés : le seuil global est donc indulgent pour le
+    LLM et très strict pour la base. Le seuil par méthode garantit 5 % de fausse
+    acceptation pour chacun et rend la comparaison V1 équitable.
+    """
+    val = donnees["validation"].copy()
+    forme = donnees["forme"].set_index("qcm_id")
+    val["forme_ok"] = val["qcm_id"].map(forme["forme_ok"]).astype(bool)
+    seuil_global = float(np.quantile(val["qa_score_neg"], CENTILE_V1))
+
+    lignes = []
+    for calibration in ("global (déployé)", "par méthode"):
+        for methode, g in val.groupby("methode"):
+            neg = g["qa_score_neg"].to_numpy(float)
+            seuil = seuil_global if calibration.startswith("global") else float(np.quantile(neg, CENTILE_V1))
+            v1 = g["qa_score"].to_numpy(float) >= seuil
+            accepte = (g["forme_ok"].to_numpy(bool) & v1
+                       & g["V2"].to_numpy(bool) & g["V3"].to_numpy(bool))
+            lignes.append({
+                "Calibration": calibration,
+                "Méthode": methode,
+                "Seuil V1": round(seuil, 2),
+                "Fausse acceptation (%)": round(100 * (neg >= seuil).mean(), 1),
+                "V1 (%)": round(100 * v1.mean(), 1),
+                "Acceptés": int(accepte.sum()),
+                "Taux d'acceptation (%)": round(100 * accepte.mean(), 1),
+            })
+    df = pd.DataFrame(lignes).set_index(["Calibration", "Méthode"])
+    return "Tableau 14 — Calibration de V1 : seuil global contre seuil par méthode", df
 
 
 def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
@@ -606,6 +645,9 @@ def construire(donnees: dict) -> str:
     sections += [f"## {titre}", ""]
     for table in tables:
         sections += [markdown(table), ""]
+
+    titre, table = tableau_calibration_methodes(donnees)
+    sections += [f"## {titre}", "", markdown(table), ""]
 
     pending = []
     if donnees["llm"].empty:

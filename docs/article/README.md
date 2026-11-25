@@ -7,14 +7,14 @@
 
 ## Ce qui est mesuré et ce qui reste à compléter
 
-Les sections marquées **À COMPLÉTER** dépendent d'éléments qui ne sont pas encore
-dans le dépôt :
+Le LLM, les ablations (mDeBERTa, température) et l'article sont à jour. Seules les
+sections d'évaluation humaine restent marquées **À COMPLÉTER** :
 
 | Section | Dépend de | Commande ensuite |
 |---|---|---|
-| 4.2 et 6.2 (LLM) | `outputs/qcm/qcm_llm.jsonl` (étape 5, GPU) | réexécuter les étapes 6 à 8 du notebook |
-| 6.3 et 8 (évaluation humaine) | `data/annotations/grille_evaluateur_{A,B}.csv` | réexécuter l'étape 9 ; le tableau 13 ajoute la matrice de confusion, la précision, le rappel et le F1 du filtre |
-| 7 (température, mDeBERTa) | GPU | étapes 10.4 et 10.5 |
+| 4.2 et 6.2 (LLM) | ✅ `outputs/qcm/qcm_llm.jsonl` (115 QCM) | rien à faire |
+| 6.3 et 8 (évaluation humaine) | `data/annotations/grille_evaluateur_{A,B}.csv` | réexécuter l'étape 9, ou lancer `python3 scripts/tableaux_resultats.py` (kappa, apport, matrice de confusion, F1) |
+| 7 (température, mDeBERTa) | ✅ exécuté | rien à faire |
 
 Après chaque mise à jour :
 
@@ -23,7 +23,7 @@ python3 scripts/tableaux_resultats.py   # met à jour resultats_auto.md
 python3 scripts/verifier_sorties.py     # signale les incohérences
 ```
 
-Puis reporter dans `article.md` les chiffres des tableaux 2 à 11, et supprimer les
+Puis reporter dans `article.md` les chiffres des tableaux 2 à 14, et supprimer les
 marqueurs `À COMPLÉTER` (le vérificateur les compte).
 
 ## Mise en page (7 pages maximum)

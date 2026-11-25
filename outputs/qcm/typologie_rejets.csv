@@ -1,37 +1,158 @@
 qcm_id,methode,cours_id,categorie
-BASE_C1_000,base,C1,distracteur confirmé sans être proche
+BASE_C1_000,base,C1,réponse introuvable
+BASE_C1_010,base,C1,réponse introuvable
 BASE_C1_011,base,C1,distracteur proche de la réponse
-BASE_C1_019,base,C1,distracteur proche de la réponse
+BASE_C1_019,base,C1,réponse introuvable
 BASE_C1_035,base,C1,réponse introuvable
 BASE_C1_044,base,C1,texte source dégradé
 BASE_C1_051,base,C1,bonne réponse non confirmée
-BASE_C1_066,base,C1,distracteur proche de la réponse
+BASE_C1_066,base,C1,réponse introuvable
 BASE_C1_083,base,C1,distracteur proche de la réponse
 BASE_C1_097,base,C1,bonne réponse non confirmée
+BASE_C1_115,base,C1,réponse introuvable
+BASE_C1_117,base,C1,réponse introuvable
 BASE_C1_123,base,C1,réponse introuvable
+BASE_C1_127,base,C1,réponse introuvable
 BASE_C2_004,base,C2,distracteur proche de la réponse
+BASE_C2_005,base,C2,réponse introuvable
 BASE_C2_009,base,C2,distracteur proche de la réponse
 BASE_C2_012,base,C2,bonne réponse non confirmée
-BASE_C2_022,base,C2,distracteur proche de la réponse
-BASE_C2_028,base,C2,distracteur proche de la réponse
+BASE_C2_018,base,C2,réponse introuvable
+BASE_C2_022,base,C2,réponse introuvable
+BASE_C2_028,base,C2,réponse introuvable
 BASE_C2_038,base,C2,distracteur proche de la réponse
+BASE_C2_039,base,C2,réponse introuvable
 BASE_C2_054,base,C2,distracteur proche de la réponse
+BASE_C2_061,base,C2,réponse introuvable
 BASE_C2_066,base,C2,distracteur proche de la réponse
 BASE_C2_068,base,C2,bonne réponse non confirmée
-BASE_C2_075,base,C2,distracteur proche de la réponse
+BASE_C2_069,base,C2,réponse introuvable
+BASE_C2_072,base,C2,réponse introuvable
+BASE_C2_075,base,C2,réponse introuvable
+BASE_C3_000,base,C3,réponse introuvable
+BASE_C3_005,base,C3,réponse introuvable
+BASE_C3_009,base,C3,réponse introuvable
+BASE_C3_013,base,C3,réponse introuvable
+BASE_C3_027,base,C3,réponse introuvable
 BASE_C3_036,base,C3,bonne réponse non confirmée
-BASE_C3_064,base,C3,distracteur proche de la réponse
-BASE_C3_071,base,C3,distracteur proche de la réponse
+BASE_C3_037,base,C3,réponse introuvable
+BASE_C3_039,base,C3,réponse introuvable
+BASE_C3_041,base,C3,réponse introuvable
+BASE_C3_055,base,C3,réponse introuvable
+BASE_C3_058,base,C3,réponse introuvable
+BASE_C3_064,base,C3,réponse introuvable
+BASE_C3_071,base,C3,réponse introuvable
 BASE_C3_079,base,C3,réponse introuvable
+BASE_C4_000,base,C4,réponse introuvable
+BASE_C4_003,base,C4,réponse introuvable
 BASE_C4_005,base,C4,distracteur proche de la réponse
+BASE_C4_012,base,C4,réponse introuvable
 BASE_C4_020,base,C4,distracteur proche de la réponse
+BASE_C4_021,base,C4,réponse introuvable
+BASE_C4_022,base,C4,réponse introuvable
+BASE_C4_024,base,C4,réponse introuvable
 BASE_C4_026,base,C4,défaut de forme
-BASE_C4_027,base,C4,distracteur proche de la réponse
+BASE_C4_027,base,C4,réponse introuvable
 BASE_C4_029,base,C4,bonne réponse non confirmée
+BASE_C4_032,base,C4,réponse introuvable
 BASE_C5_005,base,C5,bonne réponse non confirmée
-BASE_C5_007,base,C5,distracteur proche de la réponse
-BASE_C5_010,base,C5,distracteur proche de la réponse
-BASE_C5_038,base,C5,distracteur proche de la réponse
+BASE_C5_007,base,C5,réponse introuvable
+BASE_C5_010,base,C5,réponse introuvable
+BASE_C5_014,base,C5,réponse introuvable
+BASE_C5_019,base,C5,réponse introuvable
+BASE_C5_029,base,C5,réponse introuvable
+BASE_C5_031,base,C5,réponse introuvable
+BASE_C5_032,base,C5,texte source dégradé
+BASE_C5_038,base,C5,réponse introuvable
+BASE_C5_042,base,C5,réponse introuvable
 BASE_C5_046,base,C5,distracteur confirmé sans être proche
-BASE_C5_050,base,C5,distracteur proche de la réponse
-BASE_C6_014,base,C6,bonne réponse non confirmée
+BASE_C5_050,base,C5,réponse introuvable
+BASE_C5_051,base,C5,réponse introuvable
+BASE_C6_014,base,C6,réponse introuvable
+BASE_C6_016,base,C6,réponse introuvable
+BASE_C6_017,base,C6,réponse introuvable
+LLM_C1_000,llm,C1,bonne réponse non confirmée
+LLM_C1_004,llm,C1,bonne réponse non confirmée
+LLM_C1_010,llm,C1,défaut de forme
+LLM_C1_011,llm,C1,réponse introuvable
+LLM_C1_019,llm,C1,défaut de forme
+LLM_C1_044,llm,C1,texte source dégradé
+LLM_C1_049,llm,C1,bonne réponse non confirmée
+LLM_C1_059,llm,C1,défaut de forme
+LLM_C1_060,llm,C1,réponse introuvable
+LLM_C1_066,llm,C1,bonne réponse non confirmée
+LLM_C1_097,llm,C1,texte source dégradé
+LLM_C1_098,llm,C1,réponse introuvable
+LLM_C1_117,llm,C1,défaut de forme
+LLM_C1_127,llm,C1,défaut de forme
+LLM_C2_000,llm,C2,bonne réponse non confirmée
+LLM_C2_009,llm,C2,bonne réponse non confirmée
+LLM_C2_010,llm,C2,bonne réponse non confirmée
+LLM_C2_012,llm,C2,réponse introuvable
+LLM_C2_022,llm,C2,réponse introuvable
+LLM_C2_028,llm,C2,texte source dégradé
+LLM_C2_036,llm,C2,réponse introuvable
+LLM_C2_038,llm,C2,bonne réponse non confirmée
+LLM_C2_047,llm,C2,réponse introuvable
+LLM_C2_054,llm,C2,réponse introuvable
+LLM_C2_061,llm,C2,défaut de forme
+LLM_C2_066,llm,C2,bonne réponse non confirmée
+LLM_C2_068,llm,C2,distracteur proche de la réponse
+LLM_C2_069,llm,C2,bonne réponse non confirmée
+LLM_C2_072,llm,C2,défaut de forme
+LLM_C3_000,llm,C3,bonne réponse non confirmée
+LLM_C3_004,llm,C3,bonne réponse non confirmée
+LLM_C3_022,llm,C3,texte source dégradé
+LLM_C3_039,llm,C3,défaut de forme
+LLM_C3_053,llm,C3,distracteur proche de la réponse
+LLM_C3_055,llm,C3,bonne réponse non confirmée
+LLM_C3_058,llm,C3,distracteur proche de la réponse
+LLM_C3_071,llm,C3,défaut de forme
+LLM_C3_072,llm,C3,bonne réponse non confirmée
+LLM_C3_079,llm,C3,bonne réponse non confirmée
+LLM_C3_084,llm,C3,défaut de forme
+LLM_C4_000,llm,C4,défaut de forme
+LLM_C4_001,llm,C4,bonne réponse non confirmée
+LLM_C4_005,llm,C4,défaut de forme
+LLM_C4_012,llm,C4,bonne réponse non confirmée
+LLM_C4_013,llm,C4,défaut de forme
+LLM_C4_017,llm,C4,bonne réponse non confirmée
+LLM_C4_021,llm,C4,distracteur confirmé sans être proche
+LLM_C4_022,llm,C4,bonne réponse non confirmée
+LLM_C4_024,llm,C4,défaut de forme
+LLM_C4_025,llm,C4,bonne réponse non confirmée
+LLM_C4_026,llm,C4,bonne réponse non confirmée
+LLM_C4_027,llm,C4,bonne réponse non confirmée
+LLM_C4_029,llm,C4,bonne réponse non confirmée
+LLM_C4_030,llm,C4,distracteur confirmé sans être proche
+LLM_C4_032,llm,C4,réponse introuvable
+LLM_C4_033,llm,C4,bonne réponse non confirmée
+LLM_C5_004,llm,C5,bonne réponse non confirmée
+LLM_C5_007,llm,C5,texte source dégradé
+LLM_C5_009,llm,C5,défaut de forme
+LLM_C5_013,llm,C5,défaut de forme
+LLM_C5_021,llm,C5,bonne réponse non confirmée
+LLM_C5_030,llm,C5,bonne réponse non confirmée
+LLM_C5_032,llm,C5,défaut de forme
+LLM_C5_038,llm,C5,réponse introuvable
+LLM_C5_042,llm,C5,bonne réponse non confirmée
+LLM_C5_045,llm,C5,bonne réponse non confirmée
+LLM_C5_050,llm,C5,réponse introuvable
+LLM_C5_051,llm,C5,réponse introuvable
+LLM_C6_000,llm,C6,réponse introuvable
+LLM_C6_003,llm,C6,défaut de forme
+LLM_C6_005,llm,C6,défaut de forme
+LLM_C6_006,llm,C6,défaut de forme
+LLM_C6_009,llm,C6,distracteur confirmé sans être proche
+LLM_C6_011,llm,C6,défaut de forme
+LLM_C6_012,llm,C6,bonne réponse non confirmée
+LLM_C6_014,llm,C6,bonne réponse non confirmée
+LLM_C6_015,llm,C6,bonne réponse non confirmée
+LLM_C6_016,llm,C6,défaut de forme
+LLM_C6_017,llm,C6,distracteur confirmé sans être proche
+LLM_C6_019,llm,C6,réponse introuvable
+LLM_C6_020,llm,C6,défaut de forme
+LLM_C6_021,llm,C6,défaut de forme
+LLM_C6_022,llm,C6,réponse introuvable
+LLM_C6_025,llm,C6,bonne réponse non confirmée
+LLM_C6_026,llm,C6,bonne réponse non confirmée

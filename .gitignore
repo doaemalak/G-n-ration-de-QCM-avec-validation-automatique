@@ -21,8 +21,10 @@ outputs/export/
 # Tests
 .pytest_cache/
 
-# Archive Colab (générée par `make archive-colab`)
+# Archives Colab (générées par `make archive-colab` ou par le notebook)
 taln-colab.zip
+sorties_taln.zip
+notebooks/*_res.ipynb
 
 # Système
 .DS_Store

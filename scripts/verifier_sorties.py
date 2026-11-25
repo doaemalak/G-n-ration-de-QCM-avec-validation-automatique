@@ -378,6 +378,10 @@ def verifier_caches(rapport: Rapport, fichiers: dict[str, list[dict]]) -> None:
         for s in scores:
             rapport.verifier(isinstance(s.get("implication"), list) and len(s["implication"]) == 4,
                              f"scores_validateur.jsonl, {s.get('qcm_id')} : implication invalide")
+            # Les QCM d'ablation de température sont ajoutés au même cache mais n'ont pas
+            # de contrôle négatif : qa_score_neg y vaut NaN par construction.
+            if ids and s.get("qcm_id") not in ids:
+                continue
             for champ in ("qa_score", "qa_score_neg"):
                 rapport.verifier(not math.isnan(nombre(s.get(champ))),
                                  f"scores_validateur.jsonl, {s.get('qcm_id')} : {champ} non numérique")

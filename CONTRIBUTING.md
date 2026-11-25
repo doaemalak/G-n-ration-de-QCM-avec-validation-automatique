@@ -33,14 +33,18 @@ cellule de chargement du LLM ; sinon `pip install -r requirements-gpu.txt`.
 
 | Élément | État |
 |---|---|
-| Étapes 0 à 4, 6 à 8, 10.1 à 10.4, 11 | ✅ exécutées, sorties versionnées |
-| Étape 5 — génération LLM | 🟡 code prêt, à lancer sur Colab (GPU) |
-| Étape 9 — évaluation humaine (60 QCM, 2 évaluateurs) | 🟡 grilles créées après l'étape 5 |
-| Étape 10.5 — température du LLM | 🟡 GPU |
+| Étapes 0 à 8, 10.1 à 10.5, 11 | ✅ exécutées, sorties versionnées |
+| Étape 5 — génération LLM | ✅ 115/120 QCM valides (95,8 %), cache versionné |
+| Étape 9 — évaluation humaine (60 QCM, 2 évaluateurs) | 🟡 grilles de 60 QCM créées ; annotations à faire |
+| Étape 10.5 — température du LLM | ✅ exécutée |
 | Ablation du générateur (SmolLM3-3B, Gemma 3 4B) | 🟡 protocole dans `docs/llm/CHOIX_MODELE.md` |
-| LIVRABLE 2 — article | 🟡 `docs/article/article.md`, marqueurs `À COMPLÉTER` |
+| LIVRABLE 2 — article | 🟡 article à jour (7 pages) ; 6.3 et 8 en attente des annotations |
 
-### 1. Générer les QCM du LLM (GPU)
+### 1. QCM du LLM (déjà générés)
+
+**État : 115 QCM générés avec `Qwen/Qwen3-4B-Instruct-2507` (95,8 % des 120 passages),
+cache versionné dans `outputs/qcm/qcm_llm.jsonl`.** Les étapes ci-dessous servent à
+régénérer ou à changer de modèle.
 
 Modèle par défaut : `Qwen/Qwen3-4B-Instruct-2507` (voir `docs/llm/CHOIX_MODELE.md`).
 Sans accès GitHub dans le navigateur, utiliser `make archive-colab` et téléverser le zip
@@ -56,13 +60,17 @@ un cache produit par un autre modèle.
 
 ### 2. Annoter les 60 QCM
 
-Le notebook crée `data/annotations/grille_evaluateur_A.csv`, `..._B.csv` et
-`cle_echantillon.csv`. Chaque évaluateur remplit **sa** grille seul, après avoir lu
-`data/annotations/GUIDE_ANNOTATION.md`, sans ouvrir la clé. Réexécuter ensuite l'étape 9.
+Les grilles sont déjà créées : `data/annotations/grille_evaluateur_A.csv`,
+`..._B.csv` et `cle_echantillon.csv` (15 QCM par case méthode × décision). Chaque
+évaluateur remplit **sa** grille seul, après avoir lu `GUIDE_ANNOTATION.md`, sans ouvrir
+la clé. Pour préserver l'aveugle, n'envoyer au peer que sa grille et le guide. Réexécuter
+ensuite l'étape 9 du notebook, ou lancer `python3 scripts/tableaux_resultats.py` (qui
+calcule kappa, apport du filtre et matrice de confusion).
 
 ### 3. Finaliser l'article
 
-Voir `docs/article/README.md` : régénérer les tableaux, reporter les chiffres,
+L'article est déjà à jour pour le LLM et les ablations (7 pages). Après les annotations,
+voir `docs/article/README.md` : régénérer les tableaux, compléter les sections 6.3 et 8,
 supprimer les marqueurs `À COMPLÉTER`, puis `make article` (rendu vérifié : 7 pages).
 
 ## Commandes utiles
