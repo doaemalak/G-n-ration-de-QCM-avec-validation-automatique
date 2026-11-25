@@ -127,7 +127,29 @@ l'étape 5 exécutée sur GPU.
 | base | 97 | 23 | 23,7 | 0,816 |
 | llm | 115 | 49 | 42,6 | 0 |
 
-## Tableau 13 — Évaluation humaine : la grille A est encore vierge
+## Tableau 13 — Évaluation humaine
+
+| Critère | Kappa | IC 95 % (bootstrap) | Pondération | AC1 de Gwet | Accord brut (%) |
+|---|---|---|---|---|---|
+| clarte | 0,4 | [0,06 ; 0,61] | quadratic | 0,725 | 76,7 |
+| difficulte | 0,192 | [0,03 ; 0,41] | quadratic | 0,606 | 68,3 |
+| unicite | -0,017 | [-0,04 ; 0,00] | aucune | 0,966 | 96,7 |
+
+| Règle | Méthode | Part réelle d'acceptés | Qualité avant filtre (%) | Qualité après filtre (%) | Apport (points) | Précision des rejets (%) | Rappel des défauts (%) |
+|---|---|---|---|---|---|---|---|
+| stricte (A et B) | base | 0,26 | 93,3 | 93,3 | 0 | 6,7 | 74,2 |
+| stricte (A et B) | llm | 0,26 | 93,3 | 93,3 | 0 | 6,7 | 73,9 |
+| indulgente (A ou B) | base | 0,26 | 100 | 100 | 0 | 0 | — |
+| indulgente (A ou B) | llm | 0,26 | 100 | 100 | 0 | 0 | — |
+
+| Règle | Méthode | Vrais positifs | Faux positifs | Faux négatifs | Vrais négatifs | Précision (%) | IC 95 % précision (Wilson) | Rappel (%) | F1 (%) |
+|---|---|---|---|---|---|---|---|---|---|
+| stricte (A et B) | toutes | 28 | 2 | 28 | 2 | 93,3 | [78,7 ; 98,2] | 50 | 65,1 |
+| stricte (A et B) | base | 14 | 1 | 14 | 1 | 93,3 | [70,2 ; 98,8] | 50 | 65,1 |
+| stricte (A et B) | llm | 14 | 1 | 14 | 1 | 93,3 | [70,2 ; 98,8] | 50 | 65,1 |
+| indulgente (A ou B) | toutes | 30 | 0 | 30 | 0 | 100 | [88,6 ; 100,0] | 50 | 66,7 |
+| indulgente (A ou B) | base | 15 | 0 | 15 | 0 | 100 | [79,6 ; 100,0] | 50 | 66,7 |
+| indulgente (A ou B) | llm | 15 | 0 | 15 | 0 | 100 | [79,6 ; 100,0] | 50 | 66,7 |
 
 ## Tableau 14 — Calibration de V1 : seuil global contre seuil par méthode
 

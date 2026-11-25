@@ -58,11 +58,11 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 6 | Contrôles de forme (7 règles testées, biais de longueur) | ✅ |
 | 7 | Validateur V1 / V2 / V3 (questions-réponses SQuAD 2.0 + NLI, seuil V1 par contrôle négatif) | ✅ |
 | 8 | Filtrage final (forme ET V1 ET V2 ET V3), motifs de rejet, rendement, candidats naïfs | ✅ |
-| 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | 🟡 grilles de 60 QCM créées ; annotations des deux évaluateurs à faire |
+| 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | ✅ deux grilles remplies en aveugle ; kappas, AC1, apport du filtre, matrice de confusion (`scripts/page_annotation.py` pour annoter) |
 | 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température inclus) |
 | 11 | Analyse des erreurs (typologie des rejets, hallucinations, erreurs du validateur), limites, éthique | ✅ |
 | — | Export des QCM acceptés (Moodle GIFT, HTML, CSV) — besoin BF13 de l'analyse des besoins | ✅ `scripts/exporter_qcm.py` |
-| — | Livrable 2 : article ≤ 7 pages et tableaux de résultats | 🟡 article à jour (7 pages) ; sections 6.3 et 8 en attente des annotations |
+| — | Livrable 2 : article ≤ 7 pages et tableaux de résultats | ✅ article complet (section 6.3 rédigée), PDF de 7 pages |
 
 ## Exécution
 
@@ -138,10 +138,9 @@ deux générateurs à chaque *push*.
 
 ## État et suite
 
-Les QCM du LLM sont générés (115/120) et l'article est à jour pour le LLM et les
-ablations. Ce qui reste est détaillé dans `CONTRIBUTING.md` : faire remplir les deux
-grilles d'annotation (60 QCM, deux évaluateurs), réexécuter l'analyse humaine, puis
-finaliser les sections 6.3 et 8. Les tableaux se mettent à jour tout seuls avec
+Le pipeline, l'évaluation humaine (60 QCM, deux évaluateurs en aveugle) et l'article
+sont terminés ; le PDF (`make article`, avec pandoc et xelatex) fait 7 pages.
+Les tableaux se régénèrent avec
 `python3 scripts/tableaux_resultats.py`.
 
 ## Choix du générateur LLM

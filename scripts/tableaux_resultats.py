@@ -506,6 +506,46 @@ def tableau_calibration_methodes(donnees: dict) -> tuple[str, pd.DataFrame]:
     return "Tableau 14 — Calibration de V1 : seuil global contre seuil par méthode", df
 
 
+def intervalle_kappa(a: pd.Series, b: pd.Series, poids, n_tirages: int = 2000,
+                     graine: int = 0) -> str:
+    """IC à 95 % du kappa par bootstrap percentile (tirages dégénérés écartés)."""
+    a, b = a.to_numpy(), b.to_numpy()
+    rng = np.random.default_rng(graine)
+    valeurs = []
+    for _ in range(n_tirages):
+        i = rng.integers(0, len(a), len(a))
+        if len(set(a[i]) | set(b[i])) < 2:
+            continue
+        with np.errstate(all="ignore"):
+            k = cohen_kappa_score(a[i], b[i], weights=poids)
+        if not np.isnan(k):
+            valeurs.append(k)
+    if not valeurs:
+        return "—"
+    bas, haut = np.percentile(valeurs, [2.5, 97.5])
+    return f"[{bas:.2f} ; {haut:.2f}]".replace(".", ",")
+
+
+def ac1_gwet(a: pd.Series, b: pd.Series, echelle: tuple) -> float:
+    """AC1 de Gwet (2008), non pondéré : peu sensible à une catégorie très majoritaire,
+    contrairement au kappa (« paradoxe du kappa »)."""
+    accord = float((a.to_numpy() == b.to_numpy()).mean())
+    q = len(echelle)
+    pi = [((a == k).mean() + (b == k).mean()) / 2 for k in echelle]
+    hasard = sum(p * (1 - p) for p in pi) / (q - 1)
+    return (accord - hasard) / (1 - hasard) if hasard < 1 else np.nan
+
+
+def intervalle_wilson(k: int, n: int, z: float = 1.96) -> str:
+    """IC à 95 % d'une proportion k/n (Wilson), en pourcentage."""
+    if n == 0:
+        return "—"
+    p = k / n
+    centre = (p + z * z / (2 * n)) / (1 + z * z / n)
+    demi = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / (1 + z * z / n)
+    return f"[{100 * (centre - demi):.1f} ; {100 * (centre + demi):.1f}]".replace(".", ",")
+
+
 def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
     """Kappa, apport du filtre et métriques de classifieur, si les deux grilles existent.
 
@@ -531,13 +571,17 @@ def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
         annotations[e] = g.set_index("eval_id")
 
     A, B = annotations["A"], annotations["B"]
-    m = A.join(B, lsuffix="_A", rsuffix="_B")
+    m = A.merge(B, left_index=True, right_index=True, suffixes=("_A", "_B"))
     kappas = pd.DataFrame([
         {"Critère": critere,
          "Kappa": round(cohen_kappa_score(m[f"{critere}_A"], m[f"{critere}_B"], weights=poids), 3),
+         "IC 95 % (bootstrap)": intervalle_kappa(m[f"{critere}_A"], m[f"{critere}_B"], poids),
          "Pondération": poids or "aucune",
+         "AC1 de Gwet": round(ac1_gwet(m[f"{critere}_A"], m[f"{critere}_B"], echelle), 3),
          "Accord brut (%)": round(100 * (m[f"{critere}_A"] == m[f"{critere}_B"]).mean(), 1)}
-        for critere, poids in [("clarte", "quadratic"), ("difficulte", "quadratic"), ("unicite", None)]
+        for critere, poids, echelle in [("clarte", "quadratic", (1, 2, 3)),
+                                        ("difficulte", "quadratic", (1, 2, 3)),
+                                        ("unicite", None, (0, 1))]
     ]).set_index("Critère")
 
     accept_A = (A["clarte"] >= 2) & (A["unicite"] == 1)
@@ -603,12 +647,12 @@ def tableau_annotations(donnees: dict) -> tuple[str, list[pd.DataFrame]]:
                 "Vrais positifs": vp, "Faux positifs": fp,
                 "Faux négatifs": fn, "Vrais négatifs": vn,
                 "Précision (%)": round(100 * precision, 1) if not np.isnan(precision) else np.nan,
+                "IC 95 % précision (Wilson)": intervalle_wilson(vp, vp + fp),
                 "Rappel (%)": round(100 * rappel, 1) if not np.isnan(rappel) else np.nan,
                 "F1 (%)": round(100 * f1, 1) if not np.isnan(f1) else np.nan,
             })
     classifieur = pd.DataFrame(lignes_conf).set_index(["Règle", "Méthode"])
-    return ("Tableau 13 — Évaluation humaine "
-            "(le notebook fait foi pour les intervalles de confiance)",
+    return ("Tableau 13 — Évaluation humaine",
             [kappas.reset_index(), qualite, classifieur])
 
 

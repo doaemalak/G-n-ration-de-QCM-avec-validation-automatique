@@ -2,10 +2,8 @@
 
 **TALN — Sujet 11 — Filière IA & Science des Données, 5e année — EMSI Rabat — 2026/2027**
 
-> **État des résultats.** 212 QCM (97 base, 115 LLM) sont mesurés avec les contrôles de
-> forme, le validateur V1–V3, les ablations et l'analyse des erreurs. L'évaluation
-> humaine (60 QCM, deux évaluateurs) reste **À COMPLÉTER**. Tous les chiffres cités
-> figurent dans `docs/article/resultats_auto.md`.
+> Les tableaux complets sont régénérés par `scripts/tableaux_resultats.py` dans
+> `docs/article/resultats_auto.md`.
 
 ## Résumé
 
@@ -18,8 +16,9 @@ passages contre 80,8 %, et 20/20 diapositives de C6 contre 3/20 ; il pose des qu
 de compréhension. Mais il est moins fiable : 79,1 % de forme, 51,3 % de V2, 42,6 % de
 bonnes réponses les plus longues (p < 0,001), 31,2 % de clés fausses détectées. Le
 filtre déployé accepte 25/97 QCM de base et 30/115 du LLM ; avec un seuil V1 calibré par
-méthode, la base remonte à 61/97 et le LLM à 29/115. L'évaluation humaine en aveugle
-reste à faire.
+méthode, la base remonte à 61/97 et le LLM à 29/115. En aveugle, deux évaluateurs jugent
+56 QCM sur 60 acceptables, autant parmi les rejets du filtre que parmi ses acceptés
+(93,3 %) : le filtre est trop strict, et l'accord entre évaluateurs reste faible.
 
 ## 1. Introduction
 
@@ -148,8 +147,9 @@ décision, 15 par case), mélangés et présentés sous un identifiant neutre. L
 ni la décision. Critères : clarté (1–3), difficulté (1–3), unicité (0/1). Un QCM est
 **acceptable** si la clarté vaut 2 ou 3 et si `unicité = 1` ; le verdict est déduit, non
 demandé. L'accord est mesuré par le kappa de Cohen, pondéré pour les ordinaux (Landis et
-Koch, 1977). L'apport du filtre est l'écart de qualité avant/après, avec un intervalle de
-confiance par bootstrap (2 000 tirages).
+Koch, 1977), avec un intervalle de confiance par bootstrap (2 000 tirages) et l'AC1 de
+Gwet (2008), robuste aux catégories très majoritaires. L'apport du filtre est l'écart de
+qualité avant/après ; les proportions ont un intervalle de Wilson.
 
 **Ablations.** Retrait d'un contrôle à la fois ; variation des trois seuils ; modèle QA
 (SQuAD 2.0 contre CamemBERT) ; formulation, taille de prémisse et modèle NLI (MiniLM
@@ -212,10 +212,22 @@ naturel et plus couvrant, mais plus facile à deviner et moins ancré dans le pa
 
 ### 6.3 Évaluation humaine
 
-**À COMPLÉTER** après les annotations : kappa par critère, qualité avant et après
-filtre, précision des rejets, rappel des défauts, intervalles de confiance. Le filtre
-est aussi évalué comme un **classifieur binaire** du verdict humain : matrice de
-confusion 2×2, précision, rappel et F1 (tableau 13 de `resultats_auto.md`).
+**Accord.** Même verdict pour 56 QCM sur 60, mais kappas faibles : **0,40** pour la
+clarté (IC 95 % [0,06 ; 0,61]), **0,19** pour la difficulté ([0,03 ; 0,41]), −0,02
+pour l'unicité malgré 96,7 % d'accord brut. C'est le **paradoxe du kappa** : chacun ne
+met `unicité = 0` qu'une fois, sur deux QCM différents ; l'AC1 de Gwet vaut 0,97. Le
+désaccord sur la difficulté est systématique (53 QCM faciles pour B, 36 pour A), mais
+les deux jugent le LLM plus difficile que la base.
+
+**Le filtre comme classifieur.** En règle stricte (acceptable pour A **et** B), 56 QCM
+sont acceptables. Le filtre en accepte 30, dont 28 acceptables (**précision 93,3 %**,
+IC [78,7 ; 98,2]), mais 28 de ses 30 rejets le sont aussi (**rappel 50 %**, F1 65,1 %) :
+la qualité est de 93,3 % avant comme après filtre, pour les deux méthodes. Deux défauts
+sont acceptés (un énoncé de grammaire, une clé contestée sur C6), deux rejetés (un
+tableau illisible, deux réponses selon B) ; aucun n'est relevé par les deux évaluateurs.
+Le filtre rejette donc surtout de bons QCM : les humains lisent avec indulgence, V1–V3
+exigent une preuve textuelle stricte, et 4 défauts sur 60 ne suffisent pas à estimer un
+rappel stable.
 
 ## 7. Ablations et sensibilité
 
@@ -308,7 +320,8 @@ web (`… du _____:...`, avec « cliquez » et « lien »).
 **Hallucinations.** La justification du LLM contient moins de 50 % de mots du passage
 dans **0 %** des QCM : le LLM copie le passage. Cette mesure est lexicale : elle ne
 prouve pas que la justification justifie la réponse, seulement qu'elle n'est pas
-inventée. Les faux rejets et fausses acceptations seront mesurés avec les annotations.
+inventée. Face au verdict humain (§ 6.3), le filtre fait 2 fausses acceptations et 28
+faux rejets sur 60 QCM.
 
 ## 9. Limites et éthique
 
@@ -333,8 +346,10 @@ sont pas optimisés : les régler sur les 60 QCM puis mesurer sur ces mêmes QCM
 surestimerait les performances.
 
 **Évaluation.** 60 QCM et deux évaluateurs donnent des intervalles de ±15 à 20 points par
-case ; les évaluateurs sont les auteurs et reconnaissent les questions à trous.
-L'annotation est en cours.
+case ; les évaluateurs sont les auteurs et reconnaissent les questions à trous. Les
+kappas faibles (0,19 à 0,40) montrent que le guide laisse trop de place à
+l'interprétation, surtout pour la difficulté, et 4 défauts sur 60 ne suffisent pas à
+mesurer le rappel du filtre avec précision.
 
 **Reproductibilité.** Graines fixées et décodage glouton, mais le calcul 4 bits varie
 d'une carte à l'autre et les modèles peuvent évoluer ; les caches figent les résultats.
@@ -365,10 +380,11 @@ Le **choix des modèles** compte : SQuAD 2.0 reste très supérieur à CamemBERT
 contre 0,786 sur la base), et MiniLM reste le meilleur compromis face à mDeBERTa. La
 température du LLM a un effet modeste (25,6 % à 34,2 %) ; le glouton reste reproductible.
 
-La suite est tracée : les deux grilles d'annotation des 60 QCM, puis le kappa, la
-qualité avant/après filtre et la matrice de confusion. Les métriques automatiques ne
-départagent pas la base et le LLM : la base est plus fiable, le LLM plus riche. Seule
-l'évaluation humaine dira si le gain de couverture compense la perte de fiabilité.
+L'**évaluation humaine** nuance le tout : 56 QCM sur 60 sont jugés acceptables et le
+filtre n'améliore pas la qualité perçue (93,3 % avant comme après) ; il rejette surtout
+de bons QCM. Il ne doit donc pas décider seul : il sert à classer les questions à relire
+en priorité. Un échantillon plus grand, un guide plus précis sur la difficulté et des
+évaluateurs extérieurs au projet sont les prochaines étapes.
 
 ## Références
 
@@ -390,6 +406,10 @@ finetuning of quantized LLMs. *NeurIPS*.
 
 d'Hoffschmidt, M., Belblidia, W., Brendlé, T., Heinrich, Q., & Vidal, M. (2020). FQuAD:
 French question answering dataset. *Findings of EMNLP*.
+
+Gwet, K. L. (2008). Computing inter-rater reliability and its variance in the presence
+of high agreement. *British Journal of Mathematical and Statistical Psychology*, 61(1),
+29–48.
 
 He, P., Gao, J., & Chen, W. (2021). DeBERTaV3: Improving DeBERTa using ELECTRA-style
 pre-training with gradient-disentangled embedding sharing. *ICLR*.
@@ -427,7 +447,4 @@ python3 scripts/tableaux_resultats.py                        # resultats_auto.md
 python3 scripts/verifier_sorties.py                          # cohérence des sorties
 ```
 
-Les étapes 5 et 10.3 à 10.5 ont été exécutées sur Colab T4. L'étape 9 (annotations)
-reste à faire : les deux évaluateurs remplissent les grilles, puis
-`scripts/tableaux_resultats.py` calcule le kappa, l'apport du filtre et la matrice de
-confusion. Les figures sont dans `outputs/figures/`.
+Étapes 5 et 10.3 à 10.5 exécutées sur Colab T4 ; grilles dans `data/annotations/`.
