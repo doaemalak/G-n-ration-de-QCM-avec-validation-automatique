@@ -20,6 +20,7 @@ outputs/export/
 
 # Brouillons de pré-annotation (non versionnés)
 data/annotations/*_draft.csv
+data/annotations/revue_*.html
 
 # Tests
 .pytest_cache/
