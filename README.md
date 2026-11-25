@@ -15,20 +15,32 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 ```
 .
 ├── README.md                  ← ce fichier
-├── requirements.txt           ← dépendances Python
+├── CONTRIBUTING.md            ← état du projet, ce qui reste à faire, conventions
+├── CHANGELOG.md               ← journal des changements (bugs corrigés, mesures ajoutées)
+├── Makefile                   ← raccourcis : verifier, exporter, tableaux, test
+├── requirements.txt           ← dépendances Python (sans GPU)
+├── requirements-gpu.txt       ← bitsandbytes, accelerate (Colab T4)
+├── requirements-dev.txt       ← pytest et dépendances des scripts (CI)
 ├── .gitignore
 ├── notebooks/
 │   └── QCM_generation_validation.ipynb   ← LIVRABLE 1 : notebook exécuté de bout en bout
+├── scripts/                   ← OUTILS D'APRÈS-NOTEBOOK (aucun modèle, aucun GPU)
+│   ├── verifier_sorties.py    ← cohérence des artefacts versionnés
+│   ├── exporter_qcm.py        ← Moodle GIFT + HTML + CSV des QCM acceptés
+│   └── tableaux_resultats.py  ← régénère les tableaux de l'article
+├── tests/                     ← pytest sur les scripts ci-dessus
 ├── data/
 │   ├── raw/                   ← 6 supports de cours PDF (non versionnés) + sources.csv
 │   ├── processed/             ← textes nettoyés et passages découpés (passages.jsonl)
 │   └── annotations/           ← grilles d'évaluation humaine (60 QCM, ≥ 2 évaluateurs)
 ├── outputs/
 │   ├── qcm/                   ← QCM générés (base, LLM), acceptés et rejetés par le validateur
+│   ├── export/                ← GIFT/HTML/CSV, régénérés (non versionnés)
 │   └── figures/               ← graphiques utilisés dans l'article
 └── docs/
     ├── Analyse_des_besoins_Sujet11_QCM.pdf
-    └── article/               ← LIVRABLE 2 : article de 7 pages maximum
+    ├── llm/CHOIX_MODELE.md     ← choix du générateur, alternatives et licences
+    └── article/               ← LIVRABLE 2 : article (≤ 7 pages) + tableaux générés
 ```
 
 **Pourquoi tout le code est dans le notebook et pas dans un dossier `src/`.** Le notebook est le livrable noté. À l'oral, l'enseignant demande « que fait cette cellule ? ». Tout garder dans le notebook permet de lire le projet de haut en bas sans aller-retour entre fichiers, et de l'exécuter tel quel sur Colab.
@@ -42,23 +54,47 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 | 2 | Extraction et nettoyage du texte (accents LaTeX, code, sommaires, en-têtes) | ✅ |
 | 3 | Découpage en passages | ✅ |
 | 4 | Base de référence : questions à trous + distracteurs par embeddings | ✅ |
-| 5 | Modèle avancé : LLM ouvert Qwen2.5-7B-Instruct (prompt few-shot, sortie JSON) | 🟡 code prêt, génération à lancer sur Colab |
+| 5 | Modèle avancé : LLM ouvert Qwen3-4B-Instruct-2507 (prompt few-shot, sortie JSON) | ✅ 115/120 QCM valides (95,8 %), cache versionné |
 | 6 | Contrôles de forme (7 règles testées, biais de longueur) | ✅ |
 | 7 | Validateur V1 / V2 / V3 (questions-réponses SQuAD 2.0 + NLI, seuil V1 par contrôle négatif) | ✅ |
 | 8 | Filtrage final (forme ET V1 ET V2 ET V3), motifs de rejet, rendement, candidats naïfs | ✅ |
-| 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | 🟡 grille, guide et analyses prêts ; annotations à faire après l'étape 5 |
-| 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température : sur GPU) |
+| 9 | Évaluation humaine (60 QCM) et accord entre évaluateurs | ✅ deux grilles remplies en aveugle ; kappas, AC1, apport du filtre, matrice de confusion (`scripts/page_annotation.py` pour annoter) |
+| 10 | Ablations (contrôles, modèles QA/NLI, formulation, température) et sensibilité aux seuils | ✅ (mDeBERTa et température inclus) |
 | 11 | Analyse des erreurs (typologie des rejets, hallucinations, erreurs du validateur), limites, éthique | ✅ |
+| — | Export des QCM acceptés (Moodle GIFT, HTML, CSV) — besoin BF13 de l'analyse des besoins | ✅ `scripts/exporter_qcm.py` |
+| — | Livrable 2 : article ≤ 7 pages et tableaux de résultats | ✅ article complet (section 6.3 rédigée), PDF de 7 pages |
 
 ## Exécution
 
-**Sur Google Colab (nécessaire pour l'étape 5, qui demande un GPU) :**
+**Sur Google Colab (nécessaire pour régénérer l'étape 5 ; les résultats actuels sont déjà dans le dépôt) :**
 1. Créer un jeton GitHub : *GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens*. Le limiter à ce dépôt, avec le droit *Contents : Read and write*.
 2. Dans Colab : *Fichier → Ouvrir un notebook → GitHub*, cocher « Inclure les dépôts privés », puis ouvrir `notebooks/QCM_generation_validation.ipynb`.
 3. Ajouter le jeton dans les secrets Colab (icône 🔑 à gauche) sous le nom `GITHUB_TOKEN`, et activer l'accès au notebook. Il ne faut jamais écrire le jeton dans une cellule.
 4. Activer le GPU : *Exécution → Modifier le type d'exécution → GPU T4*.
 5. *Exécution → Tout exécuter*. La première cellule clone le dépôt. L'étape 1 demande de téléverser les 6 PDF.
-6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl`, `outputs/qcm/llm_brut.jsonl`, `outputs/qcm/scores_validateur.jsonl`, `outputs/qcm/scores_ablation.jsonl` et `outputs/qcm/qcm_llm_temperature.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache.
+6. Après l'exécution, récupérer `outputs/qcm/qcm_llm.jsonl`, `outputs/qcm/llm_brut.jsonl`, `outputs/qcm/scores_validateur.jsonl`, `outputs/qcm/scores_ablation.jsonl` et `outputs/qcm/qcm_llm_temperature.jsonl` (panneau Fichiers → Télécharger), puis les placer dans `outputs/qcm/` du dépôt local. Les exécutions suivantes, même sans GPU, relisent ce cache. Chaque QCM enregistre le modèle utilisé : un cache produit par un autre modèle doit être renommé ou déplacé (le notebook s'arrête et l'explique).
+
+**Sans accès GitHub dans Colab (terminal uniquement) :**
+1. `make archive-colab` produit `taln-colab.zip` : dépôt complet, caches de la base et
+   PDF de `data/raw/` s'ils y sont. Le dossier `.git` n'est pas inclus.
+2. Dans Colab, téléverser le zip (panneau Fichiers), puis dans une cellule :
+   `!unzip -q /content/taln-colab.zip -d /content/TALN`.
+3. Ouvrir/téléverser `notebooks/QCM_generation_validation.ipynb`, activer le GPU T4,
+   puis *Exécution → Tout exécuter*. Aucun jeton, aucun clone.
+4. À la fin, télécharger `sorties_taln.zip`, le décompresser dans le dépôt local, puis
+   `git add/commit/push` depuis le terminal.
+
+**Exécution autonome via GitHub (une seule autorisation à cliquer) :**
+1. Déposer les six PDF dans `MyDrive/TALN/pdf` (ou définir `QCM_PDF_DIR`).
+2. Fusionner la branche de travail dans `main` : la cellule de clone récupère `main`.
+3. Ouvrir le notebook depuis GitHub, activer le GPU T4, puis *Exécution → Tout exécuter*.
+4. À la fin, `MyDrive/TALN/sorties_taln.zip` contient `outputs/qcm/`, `outputs/figures/`
+   et `data/annotations/` — à replacer dans le dépôt local. Aucun PDF n'est inclus.
+
+Compter 30 à 45 minutes avec un T4 (génération Qwen3-4B + validateur). Si la session
+s'arrête, les caches déjà écrits sont dans le zip ; relancer reprend à partir d'eux.
+Le notebook vérifie aussi les versions (`transformers >= 4.53`) et les installe si
+Colab est en retard.
 
 **Évaluation humaine (étape 9), une fois les QCM du LLM présents :**
 1. Réexécuter le notebook. Il crée dans `data/annotations/` les fichiers `grille_evaluateur_A.csv`, `grille_evaluateur_B.csv` et `cle_echantillon.csv`.
@@ -70,6 +106,50 @@ On mesure ensuite ce que ce filtre apporte par rapport à une évaluation humain
 pip install -r requirements.txt
 jupyter notebook notebooks/QCM_generation_validation.ipynb
 ```
+Sur GPU, ajouter `pip install -r requirements-gpu.txt` (le notebook le fait lui-même s'il
+le faut). `bitsandbytes` n'est volontairement pas dans `requirements.txt` : il ne
+s'installe pas sur toutes les machines sans CUDA.
+
+## Outils d'après-notebook
+
+Trois scripts lisent les sorties déjà produites ; ils ne relancent aucun modèle et
+tournent sans GPU ni PDF. `make` enchaîne les quatre commandes.
+
+```bash
+make verifier     # invariants de tous les artefacts (schéma des QCM, décisions, caches)
+make exporter     # outputs/export/qcm_moodle_gift.txt, qcm.html, qcm.csv
+make tableaux     # docs/article/resultats_auto.md depuis outputs/qcm/
+make test         # pytest (formats, contrôles, chemins multi-méthodes)
+```
+
+- **`verifier_sorties.py`** vérifie 4 000 invariants : 4 options distinctes, `reponse ==
+  options[index_correct]`, partition acceptés/rejetés, `forme_ok` cohérent avec les sept
+  règles, seuil V1 reproduit depuis le contrôle négatif, caches complets et comparables.
+  Il avertit (sans échouer) quand les QCM du LLM ou les annotations manquent encore.
+- **`exporter_qcm.py`** produit une banque de questions Moodle (format GIFT), une page
+  HTML autonome pour relire les QCM en cours, et un CSV pour Excel. C'est le besoin
+  BF13 de `docs/Analyse_des_besoins_Sujet11_QCM.pdf`, absent du notebook.
+- **`tableaux_resultats.py`** recalcule les tableaux de l'article depuis les fichiers :
+  un chiffre cité ne peut plus être périmé ni copié à la main. Il ajoute
+  automatiquement la ligne `llm` et les kappas dès que ces données existent.
+
+La CI (`.github/workflows/verifications.yml`) exécute le vérificateur, les tests et les
+deux générateurs à chaque *push*.
+
+## État et suite
+
+Le pipeline, l'évaluation humaine (60 QCM, deux évaluateurs en aveugle) et l'article
+sont terminés ; le PDF (`make article`, avec pandoc et xelatex) fait 7 pages.
+Les tableaux se régénèrent avec
+`python3 scripts/tableaux_resultats.py`.
+
+## Choix du générateur LLM
+
+Le modèle par défaut est **Qwen3-4B-Instruct-2507** (Apache 2.0, 4 B, ~2,5 Go en 4 bits).
+Il remplace Qwen2.5-7B-Instruct : même licence, moitié des poids, meilleurs scores
+annoncés. Les alternatives (SmolLM3-3B, français natif ; Gemma 3 4B), les licences et
+l'ablation prévue sont détaillées dans **`docs/llm/CHOIX_MODELE.md`**. Le cache de
+génération enregistre le modèle utilisé et refuse un cache produit par un autre modèle.
 
 ## Données
 

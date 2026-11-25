@@ -1,0 +1,6 @@
+# Dépendances pour la génération sur GPU (Colab T4).
+# Le notebook les installe lui-même si elles manquent (cellule « Chargement du
+# modèle »), mais les isoler évite de casser `pip install -r requirements.txt`
+# sur une machine sans CUDA : bitsandbytes n'a pas de roue utilisable partout.
+bitsandbytes>=0.43        # quantification 4 bits du LLM (GPU uniquement)
+accelerate>=0.33          # device_map="auto" pour le chargement quantifié

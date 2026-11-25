@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annotation des QCM</title>
+<style>
+:root {
+  --bg: #f6f5f1; --carte: #ffffff; --texte: #1d1d1b; --doux: #6b6a64; --ligne: #dedcd4;
+  --accent: #2f5d8a; --accent-doux: #e6eef6; --ok: #2e7d4f; --ok-doux: #e5f3ea;
+  --alerte: #a8471f; --passage: #fbfaf6;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1a1a19; --carte: #242422; --texte: #ecebe6; --doux: #a3a29b; --ligne: #3a3936;
+    --accent: #7fb0e0; --accent-doux: #22323f; --ok: #6fc794; --ok-doux: #1f3428;
+    --alerte: #e89a72; --passage: #1f1f1d; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--texte);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { position: sticky; top: 0; z-index: 2; background: var(--bg);
+  border-bottom: 1px solid var(--ligne); padding: 10px 16px; }
+.barre { max-width: 900px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.barre h1 { font-size: 16px; margin: 0; font-weight: 600; }
+.progres { flex: 1; min-width: 140px; height: 6px; background: var(--ligne); border-radius: 3px; overflow: hidden; }
+.progres div { height: 100%; background: var(--ok); width: 0; transition: width .2s; }
+.compteur { font-variant-numeric: tabular-nums; color: var(--doux); font-size: 14px; }
+main { max-width: 900px; margin: 0 auto; padding: 16px; }
+.carte { background: var(--carte); border: 1px solid var(--ligne); border-radius: 10px; padding: 18px; margin-bottom: 14px; }
+.meta { color: var(--doux); font-size: 13px; margin-bottom: 6px; }
+.passage { background: var(--passage); border-left: 3px solid var(--ligne); padding: 10px 12px;
+  font-size: 14.5px; max-height: 300px; overflow: auto; white-space: pre-wrap; border-radius: 4px; }
+.question { font-size: 17px; font-weight: 600; margin: 14px 0 10px; }
+.options { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.options li { border: 1px solid var(--ligne); border-radius: 6px; padding: 8px 10px; display: flex; gap: 10px; }
+.options li b { min-width: 1.2em; }
+.options li.juste { border-color: var(--ok); background: var(--ok-doux); }
+.options li.juste::after { content: "réponse indiquée"; margin-left: auto; color: var(--ok); font-size: 12px; white-space: nowrap; align-self: center; }
+.critere { margin: 14px 0; }
+.critere .titre { font-weight: 600; margin-bottom: 6px; }
+.choix { display: flex; flex-wrap: wrap; gap: 8px; }
+.choix label { flex: 1 1 160px; border: 1px solid var(--ligne); border-radius: 8px; padding: 8px 10px;
+  cursor: pointer; font-size: 14px; display: flex; gap: 8px; align-items: flex-start; }
+.choix label:has(input:checked) { border-color: var(--accent); background: var(--accent-doux); }
+.choix input { margin-top: 4px; }
+textarea { width: 100%; min-height: 56px; font: inherit; font-size: 14px; padding: 8px; border-radius: 6px;
+  border: 1px solid var(--ligne); background: var(--carte); color: var(--texte); }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button, .bouton { font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--ligne); background: var(--carte); color: var(--texte); }
+button.principal { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { button.principal { color: #10161c; } }
+button:disabled { opacity: .45; cursor: default; }
+.grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 5px; }
+.grille button { padding: 5px 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+.grille button.fait { background: var(--ok-doux); border-color: var(--ok); }
+.grille button.courant { outline: 2px solid var(--accent); }
+.note { color: var(--doux); font-size: 13px; }
+.alerte { color: var(--alerte); }
+details summary { cursor: pointer; font-weight: 600; }
+input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<header><div class="barre">
+  <h1>Grille de l'évaluateur __EVALUATEUR__</h1>
+  <div class="progres"><div id="barre"></div></div>
+  <span class="compteur" id="compteur"></span>
+</div></header>
+
+<main>
+  <details class="carte">
+    <summary>Rappel du guide d'annotation</summary>
+    <p>Jugez chaque QCM <b>par rapport au passage</b>, comme un enseignant qui relit une question d'examen. Remplissez la grille seul·e, sans en parler avec l'autre évaluateur.</p>
+    <ul>
+      <li><b>Clarté</b> : 3 se comprend du premier coup · 2 avec effort (formulation maladroite, phrase tronquée) · 1 incompréhensible ou ambiguë.</li>
+      <li><b>Difficulté</b>, pour un étudiant qui a étudié le cours : 1 facile ou devinable (distracteurs absurdes) · 2 moyenne · 3 il faut avoir bien compris.</li>
+      <li><b>Unicité</b> : 1 si <b>une seule</b> option est correcte d'après le passage <b>et</b> que c'est la réponse indiquée · 0 sinon (aucune, plusieurs, ou réponse indiquée fausse). En cas de doute sérieux, mettez 0 et expliquez.</li>
+      <li><b>Commentaire</b> (facultatif) : « deux bonnes réponses », « distracteurs hors sujet », « phrase tronquée », « réponse fausse »…</li>
+    </ul>
+  </details>
+
+  <section class="carte" id="qcm"></section>
+
+  <section class="carte nav">
+    <button id="prec">← Précédent</button>
+    <button id="suiv" class="principal">Suivant →</button>
+    <span class="note">Raccourcis : ← → pour naviguer · les réponses sont enregistrées automatiquement dans ce navigateur.</span>
+  </section>
+
+  <section class="carte">
+    <div class="titre" style="font-weight:600;margin-bottom:8px">Tous les QCM</div>
+    <div class="grille" id="grille"></div>
+  </section>
+
+  <section class="carte nav">
+    <button id="exporter" class="principal">Télécharger grille_evaluateur___EVALUATEUR__.csv</button>
+    <label class="bouton" for="import">Reprendre depuis un CSV</label>
+    <input type="file" id="import" accept=".csv,text/csv">
+    <span class="note" id="etat"></span>
+  </section>
+</main>
+
+<script>
+const EVAL = "__EVALUATEUR__";
+const QCM = __DONNEES__;
+const CLE = "annotation_taln_" + EVAL;
+const CRITERES = [
+  ["clarte", "Clarté", [["3", "se comprend du premier coup"], ["2", "compréhensible avec effort"], ["1", "incompréhensible ou ambiguë"]]],
+  ["difficulte", "Difficulté", [["1", "facile ou devinable"], ["2", "moyenne"], ["3", "il faut avoir bien compris"]]],
+  ["unicite", "Unicité", [["1", "une seule bonne option, celle indiquée"], ["0", "aucune, plusieurs, ou réponse fausse"]]],
+];
+
+let notes = {};
+try { notes = JSON.parse(localStorage.getItem(CLE) || "{}") || {}; } catch (e) { notes = {}; }
+let i = 0;
+try { i = Math.min(QCM.length - 1, Math.max(0, +localStorage.getItem(CLE + "_pos") || 0)); } catch (e) {}
+
+function sauver() {
+  try { localStorage.setItem(CLE, JSON.stringify(notes)); localStorage.setItem(CLE + "_pos", i); } catch (e) {}
+}
+function complet(id) { const n = notes[id] || {}; return CRITERES.every(([c]) => n[c] !== undefined && n[c] !== ""); }
+function echapper(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function afficher() {
+  const q = QCM[i], n = notes[q.eval_id] || {};
+  const opts = ["A", "B", "C", "D"].map(l =>
+    `<li class="${l === q.bonne_reponse_indiquee.trim() ? "juste" : ""}"><b>${l}</b><span>${echapper(q[l])}</span></li>`).join("");
+  const crit = CRITERES.map(([c, titre, valeurs]) => `
+    <div class="critere"><div class="titre">${titre}</div><div class="choix">
+      ${valeurs.map(([v, txt]) => `<label><input type="radio" name="${c}" value="${v}" ${n[c] === v ? "checked" : ""}>
+        <span><b>${v}</b> — ${txt}</span></label>`).join("")}
+    </div></div>`).join("");
+  document.getElementById("qcm").innerHTML = `
+    <div class="meta">${q.eval_id} · cours ${echapper(q.cours)} · ${i + 1} / ${QCM.length}</div>
+    <div class="passage">${echapper(q.passage)}</div>
+    <div class="question">${echapper(q.question)}</div>
+    <ul class="options">${opts}</ul>
+    ${crit}
+    <div class="critere"><div class="titre">Commentaire <span class="note">(facultatif)</span></div>
+      <textarea id="commentaire" placeholder="ex. deux bonnes réponses, phrase tronquée…">${echapper(n.commentaire || "")}</textarea></div>`;
+  document.querySelectorAll("#qcm input[type=radio]").forEach(r => r.addEventListener("change", () => {
+    (notes[q.eval_id] ||= {})[r.name] = r.value; sauver(); maj();
+  }));
+  document.getElementById("commentaire").addEventListener("input", e => {
+    (notes[q.eval_id] ||= {}).commentaire = e.target.value; sauver();
+  });
+  document.getElementById("prec").disabled = i === 0;
+  document.getElementById("suiv").disabled = i === QCM.length - 1;
+  maj();
+}
+
+function maj() {
+  const faits = QCM.filter(q => complet(q.eval_id)).length;
+  document.getElementById("barre").style.width = (100 * faits / QCM.length) + "%";
+  document.getElementById("compteur").textContent = `${faits} / ${QCM.length} complets`;
+  document.getElementById("grille").innerHTML = QCM.map((q, k) =>
+    `<button data-k="${k}" class="${complet(q.eval_id) ? "fait" : ""} ${k === i ? "courant" : ""}" title="${q.eval_id}">${k + 1}</button>`).join("");
+  document.querySelectorAll("#grille button").forEach(b => b.addEventListener("click", () => aller(+b.dataset.k)));
+  const manque = QCM.length - faits;
+  const etat = document.getElementById("etat");
+  etat.textContent = manque ? `Il manque ${manque} QCM incomplet(s).` : "Grille complète : vous pouvez la télécharger.";
+  etat.className = "note" + (manque ? " alerte" : "");
+}
+
+function aller(k) { i = Math.min(QCM.length - 1, Math.max(0, k)); sauver(); afficher(); window.scrollTo(0, 0); }
+document.getElementById("prec").onclick = () => aller(i - 1);
+document.getElementById("suiv").onclick = () => aller(i + 1);
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "TEXTAREA") return;
+  if (e.key === "ArrowLeft") aller(i - 1);
+  if (e.key === "ArrowRight") aller(i + 1);
+});
+
+const COLS = ["eval_id","cours","passage","question","A","B","C","D","bonne_reponse_indiquee","clarte","difficulte","unicite","commentaire"];
+function champ(v) { v = String(v ?? ""); return /[;"\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+
+document.getElementById("exporter").onclick = () => {
+  const manque = QCM.filter(q => !complet(q.eval_id)).map(q => q.eval_id);
+  if (manque.length && !confirm(`${manque.length} QCM incomplet(s) (${manque.slice(0, 5).join(", ")}…). Télécharger quand même ?`)) return;
+  const lignes = [COLS.join(";")].concat(QCM.map(q => {
+    const n = notes[q.eval_id] || {};
+    return COLS.map(c => champ(c in q ? q[c] : (n[c] || "").replace(/\s+/g, " ").trim())).join(";");
+  }));
+  const blob = new Blob(["﻿" + lignes.join("\r\n") + "\r\n"], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `grille_evaluateur_${EVAL}.csv`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+
+function lireCSV(texte) {
+  const lignes = []; let ligne = [], champ = "", guill = false;
+  texte = texte.replace(/^﻿/, "");
+  for (let k = 0; k < texte.length; k++) {
+    const c = texte[k];
+    if (guill) { if (c === '"') { if (texte[k + 1] === '"') { champ += '"'; k++; } else guill = false; } else champ += c; }
+    else if (c === '"') guill = true;
+    else if (c === ";") { ligne.push(champ); champ = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && texte[k + 1] === "\n") k++; ligne.push(champ); lignes.push(ligne); ligne = []; champ = ""; }
+    else champ += c;
+  }
+  if (champ || ligne.length) { ligne.push(champ); lignes.push(ligne); }
+  return lignes;
+}
+document.getElementById("import").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const [tete, ...corps] = lireCSV(await f.text());
+  const idx = c => tete.indexOf(c);
+  if (idx("eval_id") < 0 || idx("clarte") < 0) { alert("Ce fichier n'a pas le format d'une grille."); return; }
+  let n = 0;
+  for (const l of corps) {
+    const id = l[idx("eval_id")]; if (!QCM.some(q => q.eval_id === id)) continue;
+    notes[id] = {}; ["clarte", "difficulte", "unicite", "commentaire"].forEach(c => { const v = (l[idx(c)] || "").trim(); if (v) notes[id][c] = v; });
+    n++;
+  }
+  sauver(); afficher(); alert(`${n} lignes reprises.`);
+  e.target.value = "";
+};
+
+afficher();
+</script>
+</body>
+</html>

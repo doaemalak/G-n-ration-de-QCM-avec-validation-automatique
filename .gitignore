@@ -15,6 +15,21 @@ hf_cache/
 # PDF de cours fournis par l'enseignant : droits de diffusion à vérifier avant de les publier
 data/raw/*.pdf
 
+# Sorties dérivées (régénérées par scripts/exporter_qcm.py, Makefile)
+outputs/export/
+
+# Brouillons de pré-annotation (non versionnés)
+data/annotations/*_draft.csv
+data/annotations/revue_*.html
+
+# Tests
+.pytest_cache/
+
+# Archives Colab (générées par `make archive-colab` ou par le notebook)
+taln-colab.zip
+sorties_taln.zip
+notebooks/*_res.ipynb
+
 # Système
 .DS_Store
 Thumbs.db

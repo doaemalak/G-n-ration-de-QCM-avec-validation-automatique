@@ -1,38 +1,75 @@
 seuil,valeur,methode,% acceptés
-V1 : centile du contrôle négatif,0.8,base,64.9
-V1 : centile du contrôle négatif,0.817,base,64.9
-V1 : centile du contrôle négatif,0.835,base,64.9
-V1 : centile du contrôle négatif,0.852,base,64.9
-V1 : centile du contrôle négatif,0.869,base,64.9
-V1 : centile du contrôle négatif,0.886,base,64.9
-V1 : centile du contrôle négatif,0.904,base,63.9
-V1 : centile du contrôle négatif,0.921,base,63.9
-V1 : centile du contrôle négatif,0.938,base,62.9
-V1 : centile du contrôle négatif,0.955,base,62.9
-V1 : centile du contrôle négatif,0.973,base,61.9
-V1 : centile du contrôle négatif,0.99,base,54.6
-V2 : implication min. de la bonne réponse,0.3,base,63.9
-V2 : implication min. de la bonne réponse,0.35,base,63.9
-V2 : implication min. de la bonne réponse,0.4,base,63.9
-V2 : implication min. de la bonne réponse,0.45,base,62.9
-V2 : implication min. de la bonne réponse,0.5,base,62.9
-V2 : implication min. de la bonne réponse,0.55,base,62.9
-V2 : implication min. de la bonne réponse,0.6,base,62.9
-V2 : implication min. de la bonne réponse,0.65,base,62.9
-V2 : implication min. de la bonne réponse,0.7,base,62.9
-V2 : implication min. de la bonne réponse,0.75,base,62.9
-V2 : implication min. de la bonne réponse,0.8,base,61.9
-V3 : implication max. d'un distracteur,0.6,base,28.9
-V3 : implication max. d'un distracteur,0.63,base,29.9
-V3 : implication max. d'un distracteur,0.66,base,32.0
-V3 : implication max. d'un distracteur,0.69,base,36.1
-V3 : implication max. d'un distracteur,0.72,base,39.2
-V3 : implication max. d'un distracteur,0.75,base,44.3
-V3 : implication max. d'un distracteur,0.78,base,49.5
-V3 : implication max. d'un distracteur,0.81,base,54.6
-V3 : implication max. d'un distracteur,0.84,base,55.7
-V3 : implication max. d'un distracteur,0.87,base,59.8
-V3 : implication max. d'un distracteur,0.9,base,62.9
-V3 : implication max. d'un distracteur,0.93,base,67.0
-V3 : implication max. d'un distracteur,0.96,base,78.4
-V3 : implication max. d'un distracteur,0.99,base,86.6
+V1 : centile du contrôle négatif,0.8,base,49.5
+V1 : centile du contrôle négatif,0.817,base,49.5
+V1 : centile du contrôle négatif,0.835,base,47.4
+V1 : centile du contrôle négatif,0.852,base,46.4
+V1 : centile du contrôle négatif,0.869,base,44.3
+V1 : centile du contrôle négatif,0.886,base,40.2
+V1 : centile du contrôle négatif,0.904,base,32.0
+V1 : centile du contrôle négatif,0.921,base,30.9
+V1 : centile du contrôle négatif,0.938,base,25.8
+V1 : centile du contrôle négatif,0.955,base,25.8
+V1 : centile du contrôle négatif,0.973,base,21.6
+V1 : centile du contrôle négatif,0.99,base,18.6
+V1 : centile du contrôle négatif,0.8,llm,33.0
+V1 : centile du contrôle négatif,0.817,llm,33.0
+V1 : centile du contrôle négatif,0.835,llm,33.0
+V1 : centile du contrôle négatif,0.852,llm,33.0
+V1 : centile du contrôle négatif,0.869,llm,32.2
+V1 : centile du contrôle négatif,0.886,llm,29.6
+V1 : centile du contrôle négatif,0.904,llm,28.7
+V1 : centile du contrôle négatif,0.921,llm,28.7
+V1 : centile du contrôle négatif,0.938,llm,27.0
+V1 : centile du contrôle négatif,0.955,llm,26.1
+V1 : centile du contrôle négatif,0.973,llm,25.2
+V1 : centile du contrôle négatif,0.99,llm,24.3
+V2 : implication min. de la bonne réponse,0.3,base,26.8
+V2 : implication min. de la bonne réponse,0.35,base,26.8
+V2 : implication min. de la bonne réponse,0.4,base,26.8
+V2 : implication min. de la bonne réponse,0.45,base,25.8
+V2 : implication min. de la bonne réponse,0.5,base,25.8
+V2 : implication min. de la bonne réponse,0.55,base,25.8
+V2 : implication min. de la bonne réponse,0.6,base,25.8
+V2 : implication min. de la bonne réponse,0.65,base,25.8
+V2 : implication min. de la bonne réponse,0.7,base,25.8
+V2 : implication min. de la bonne réponse,0.75,base,25.8
+V2 : implication min. de la bonne réponse,0.8,base,25.8
+V2 : implication min. de la bonne réponse,0.3,llm,29.6
+V2 : implication min. de la bonne réponse,0.35,llm,29.6
+V2 : implication min. de la bonne réponse,0.4,llm,27.8
+V2 : implication min. de la bonne réponse,0.45,llm,27.8
+V2 : implication min. de la bonne réponse,0.5,llm,26.1
+V2 : implication min. de la bonne réponse,0.55,llm,24.3
+V2 : implication min. de la bonne réponse,0.6,llm,23.5
+V2 : implication min. de la bonne réponse,0.65,llm,23.5
+V2 : implication min. de la bonne réponse,0.7,llm,21.7
+V2 : implication min. de la bonne réponse,0.75,llm,21.7
+V2 : implication min. de la bonne réponse,0.8,llm,16.5
+V3 : implication max. d'un distracteur,0.6,base,11.3
+V3 : implication max. d'un distracteur,0.63,base,11.3
+V3 : implication max. d'un distracteur,0.66,base,12.4
+V3 : implication max. d'un distracteur,0.69,base,12.4
+V3 : implication max. d'un distracteur,0.72,base,13.4
+V3 : implication max. d'un distracteur,0.75,base,15.5
+V3 : implication max. d'un distracteur,0.78,base,17.5
+V3 : implication max. d'un distracteur,0.81,base,20.6
+V3 : implication max. d'un distracteur,0.84,base,20.6
+V3 : implication max. d'un distracteur,0.87,base,22.7
+V3 : implication max. d'un distracteur,0.9,base,25.8
+V3 : implication max. d'un distracteur,0.93,base,27.8
+V3 : implication max. d'un distracteur,0.96,base,34.0
+V3 : implication max. d'un distracteur,0.99,base,36.1
+V3 : implication max. d'un distracteur,0.6,llm,11.3
+V3 : implication max. d'un distracteur,0.63,llm,13.0
+V3 : implication max. d'un distracteur,0.66,llm,13.9
+V3 : implication max. d'un distracteur,0.69,llm,14.8
+V3 : implication max. d'un distracteur,0.72,llm,16.5
+V3 : implication max. d'un distracteur,0.75,llm,17.4
+V3 : implication max. d'un distracteur,0.78,llm,18.3
+V3 : implication max. d'un distracteur,0.81,llm,20.0
+V3 : implication max. d'un distracteur,0.84,llm,23.5
+V3 : implication max. d'un distracteur,0.87,llm,24.3
+V3 : implication max. d'un distracteur,0.9,llm,26.1
+V3 : implication max. d'un distracteur,0.93,llm,27.8
+V3 : implication max. d'un distracteur,0.96,llm,32.2
+V3 : implication max. d'un distracteur,0.99,llm,33.0
